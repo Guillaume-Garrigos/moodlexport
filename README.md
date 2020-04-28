@@ -8,6 +8,7 @@ Features so far :
 - Adding a question to a given category
 - Export a category of questions under the format Moodle XML, which can be imported directly into Moodle.
 - Supports Unicode éàê ...
+- Latex syntax : correctly supports inline latex with $e^x$, and equation with $$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases} etc
 
 How to use : 
 ```
