@@ -4,11 +4,12 @@ Python function to easily generate files that Moodle can use to create a test.
 
 Features so far :
 - Creating a question
+    * Currently supports "composition" and "multichoice"
 - Creating a category of questions
 - Adding a question to a given category
 - Export a category of questions under the format Moodle XML, which can be imported directly into Moodle.
 - Supports Unicode éàê ...
-- Latex syntax : correctly supports inline latex with $e^x$, and equation with $$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases} etc
+- Latex syntax : correctly supports inline latex with `$e^x$`, and equation with `$$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases}` etc
 
 How to use : 
 ```
@@ -20,8 +21,8 @@ category.save("ma_categorie") # crée un fichier déguelasse mais prêt à l'exp
 ```
  
 To do:
-- Support other kinds of questions than "composition". Like QCM or other stuff
 - problem with latex \frac because \f in python strings means something. Could be fixed with custom unescape.
 - Extract list of questions from a latex file
 - Import/export of the test itself? See https://www.youtube.com/watch?v=0D6uNCXk_MQ
 - Extract data from .txt see https://vletools.herokuapp.com/info/help
+- for multichoice we never check that the sum of the fractoins is equal to 100% 
