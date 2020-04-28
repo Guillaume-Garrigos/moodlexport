@@ -7,3 +7,8 @@ Features so far :
 - Creating a category of questions
 - Adding a question to a given category
 - Export a category of questions under the format Moodle XML, which can be imported directly into Moodle.
+ 
+To do:
+- Support other kinds of questions thatn "free answer". Like QCM
+- Extract list of questions from a latex file
+- Import/export of the test itself? See https://www.youtube.com/watch?v=0D6uNCXk_MQ
