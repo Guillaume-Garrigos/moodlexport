@@ -21,6 +21,7 @@ category.save("ma_categorie") # crée un fichier déguelasse mais prêt à l'exp
  
 To do:
 - Support other kinds of questions than "composition". Like QCM or other stuff
+- problem with latex \frac because \f in python strings means something. Could be fixed with custom unescape.
 - Extract list of questions from a latex file
 - Import/export of the test itself? See https://www.youtube.com/watch?v=0D6uNCXk_MQ
 - Extract data from .txt see https://vletools.herokuapp.com/info/help
