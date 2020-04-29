@@ -32,9 +32,8 @@ The Jupyter Notebook `Moodle_generator` contains Python code which allows to eas
     question.grade(2.0)
     Answer("Yes", False).addto(question)
     Answer("No", True).addto(question) 
-    question.addto(category) # on a fini donc ajoute la question à la catégorie
-
-category.save() # on exporte la question si on veut vérifier que ça marche
+    question.addto(category) 
+    category.save()
 
  
 Known issues/missing features :
