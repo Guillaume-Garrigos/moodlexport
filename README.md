@@ -37,7 +37,6 @@ The Jupyter Notebook `Moodle_generator` contains Python code which allows to eas
 
  
 Known issues/missing features :
-- problem with the latex command \frac because \f in python strings means something. Could be fixed with custom unescape.
 - Extract list of questions from a latex file. Would be useful to type a list of questions in Latex (in a itemize environment) and to feed it to Python.
 - Extract list of questions from .txt file is doable online see https://vletools.herokuapp.com/info/help but their code is not shared...
 - for multichoice we never check that the sum of the fractions is equal to 100% 
