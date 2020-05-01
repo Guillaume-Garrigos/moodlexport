@@ -9,38 +9,6 @@ import json
 import io
 import numpy as np  # only for np.bool ... too bad :/
 
-# to deal with mess between Latex, python and xml special characters
-# \u and \x not supported but useless for inline latex?
-UNESCAPE_LATEX = { '\x07':'\\a', '\x0c':'\\f', '\x0b':'\\v', '\x08':'\\b', '\n': '\\n', '\r':'\\r', '\t':'\\t' } 
-
-def cleanstr(string, raw=False):
-    if raw:
-        string = string.replace('\t','') # no tabs
-        string = string.replace('\n','') # no linebreak
-    else:
-        string = string.replace('\t','  ') # double space instead of tabs
-    return string
-
-def savestr(string, filename="new.txt", raw=False):
-    string = cleanstr(string, raw)
-    text_file = io.open(filename, "w", encoding='utf8') # essential for accents and other characters
-    text_file.write(string)
-    text_file.close()
-
-def latex_protect(string):
-    return unescape(string, UNESCAPE_LATEX)
-    
-def html(string):
-    if string is "":
-        return string
-    else:
-        return "<![CDATA[<p>\(\)" + latex_protect(string) + "</p>]]>"  # \(\) pour activer latex dans Moodle
-
-def set_oparg(name, default_value, **opargs): #optional argument manager
-    if name in opargs:
-        return opargs.get(name)
-    else:
-        return default_value
 
 ####################################
 ## GLOBAL CONSTANTS 
@@ -90,8 +58,17 @@ DICT_DEFAULT_QUESTION_MOODLE = {
     "answer" : {'default': ""} # We deal with this in the Answer class
 }
 
-# easy access to alias
-def alias(field):
+
+# to deal with mess between Latex, python and xml special characters
+# \u and \x not supported but useless for inline latex?
+UNESCAPE_LATEX = { '\x07':'\\a', '\x0c':'\\f', '\x0b':'\\v', '\x08':'\\b', '\n': '\\n', '\r':'\\r', '\t':'\\t' } 
+
+
+####################################
+## STRING FUNCTIONS
+####################################
+
+def alias(field): # easy access to alias
     if 'alias' in DICT_DEFAULT_QUESTION_MOODLE[field]:
         return DICT_DEFAULT_QUESTION_MOODLE[field]['alias']
     else:
@@ -102,6 +79,35 @@ def isfield(string):
         if string in [key, alias(key)]:
             return True
     return False
+
+def cleanstr(string, raw=False):
+    if raw:
+        string = string.replace('\t','') # no tabs
+        string = string.replace('\n','') # no linebreak
+    else:
+        string = string.replace('\t','  ') # double space instead of tabs
+    return string
+
+def savestr(string, filename="new.txt", raw=False):
+    string = cleanstr(string, raw)
+    text_file = io.open(filename, "w", encoding='utf8') # essential for accents and other characters
+    text_file.write(string)
+    text_file.close()
+
+def latex_protect(string):
+    return unescape(string, UNESCAPE_LATEX)
+    
+def html(string):
+    if string is "":
+        return string
+    else:
+        return "<![CDATA[<p>\(\)" + latex_protect(string) + "</p>]]>"  # \(\) pour activer latex dans Moodle
+
+def set_oparg(name, default_value, **opargs): #optional argument manager
+    if name in opargs:
+        return opargs.get(name)
+    else:
+        return default_value
 
 ####################################
 ## CLASS : CATEGORY 
