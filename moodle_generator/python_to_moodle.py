@@ -125,6 +125,7 @@ class Category():
         self.dict = { "quiz": { "question": [{}] } }
         self.questions = self.dict["quiz"]["question"]
         self._set(name, description)
+        self.question_objects = [] # will gather the objects themselves
     
     def _set(self, name="Default category name", description=""):
         qcat = {
@@ -145,6 +146,7 @@ class Category():
         
     def append(self, question): # adds a Question to a Category
         self.questions.append(question.dict)
+        self.question_objects.append(question)
                 
     def save(self, file_name=None):
         """ Save a category under the format Moodle XML """
@@ -171,6 +173,7 @@ class Question():
         self.dict = {}
         for field in self.structure:
             self._set(field, self.structure[field]['default'])
+        self.answer_objects = []
                
     def _set(self, field, value=""):
         """ Assigns a value to a field of a Question """
@@ -250,6 +253,7 @@ class Answer():
             if question.dict["answer"] == "": # if it is the first question we add
                 question.dict["answer"] = []
             question.dict["answer"].append(self.dict)
+            question.answer_objects.append(self)
         else:
             print('Error : answers can only be added to multichoice questions')
                      
