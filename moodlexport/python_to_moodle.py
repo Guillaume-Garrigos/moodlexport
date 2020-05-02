@@ -5,10 +5,11 @@
 from xml.dom.minidom import parseString
 from xml.sax.saxutils import unescape
 import xmltodict
-import json
+#import json
 import io
 import numpy as np  # only for np.bool ... too bad :/
 
+from moodlequestion.tex_to_python import *
 
 ####################################
 ## GLOBAL CONSTANTS 
@@ -154,6 +155,7 @@ class Category():
             file_name = self.getname()
         category_xml = xmltodict.unparse(self.dict, pretty=True)
         savestr(unescape(category_xml), file_name + ".xml")
+    
 
 
 ####################################
