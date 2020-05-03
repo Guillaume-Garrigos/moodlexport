@@ -9,7 +9,7 @@ import xmltodict
 import io
 import numpy as np  # only for np.bool ... too bad :/
 
-from moodlequestion.tex_to_python import *
+from moodlexport.tex_to_python import *
 
 ####################################
 ## GLOBAL CONSTANTS 
