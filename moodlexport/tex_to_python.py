@@ -1,4 +1,6 @@
-from moodlequestion.python_to_moodle import *
+# pip install texsoup
+
+from moodlexport.python_to_moodle import *
 from TexSoup import TexSoup
 from TexSoup.data import TexNode
 from TexSoup.utils import TokenWithPosition
