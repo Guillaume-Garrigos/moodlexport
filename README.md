@@ -1,4 +1,4 @@
-# moodle_test_generator
+# moodlexport
 
 The Jupyter Notebook `Moodle_generator` contains Python code which allows to easily generate families of questions (called *categories* in Moodle) that can be directly exported to Moodle and used to create a test. The main idea is that : 
 - it is easier to define mathematical objects in Python than Moodle
