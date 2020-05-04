@@ -19,22 +19,21 @@ This Python module provides code which allows to easily generate families of que
 
 ### Simple examples : 
 
+```python
+question = Question("essay")
+question.text("What is the derivative of $f(x) = e^x + 0.5 \Vert x \Vert^2$?")
+question.grade(1.5)
+question.save("my first question")
+```
 
-    category = Category("Questions for exam 2")
-    question = Question("essay") # new open question
-    question.text("What is the derivative of $f(x) = e^x + 0.5 \Vert x \Vert^2$.") # question with latex
-    question.grade(1.5)
-    question.addto(category) # adds the question to the category
-    category.save() # creates a "Questions for exam 2.xml" file ready to import in Moodle
-
-    question = Question("multichoice") # new multiple choice question
-    question.text("Is every symmetric matrix invertible?")
-    question.grade(2.0)
-    Answer("Yes", False).addto(question)
-    Answer("No", True).addto(question) 
-    question.addto(category) 
-    category.save()
-
+```python
+question = Question("multichoice")
+question.text("Is every symmetric matrix invertible?")
+question.grade(2.0)
+question.answer("Yes", False)
+question.answer("No", True)
+question.save("A multichoice question")
+```
  
 Known issues/missing features :
 - Extract list of questions from .txt file is doable online see https://vletools.herokuapp.com/info/help but their code is not shared...
