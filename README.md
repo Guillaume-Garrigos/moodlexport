@@ -9,14 +9,28 @@ This Python module provides code which allows to easily generate families of que
 It can be installed with a pip command : `pip install moodlexport`
 
 Some internal links within this documentation:
-- [Simple examples from Python](#Simple-examples-from-Python)
-- [Simple examples from Latex](#Simple-examples-from-Latex)
-- [Exporting many questions at once](#Exporting-many-questions-at-once)
-- [Features of this module so far](#Features-of-this-module-so-far)
+- [Main features of this module so far](#Main-features-of-this-module-so-far)
+- [Quick start](#Quick-start)
+    - [Simple examples from Python](#Simple-examples-from-Python)
+    - [Simple examples from Latex](#Simple-examples-from-Latex)
+    - [Exporting many questions at once](#Exporting-many-questions-at-once)
+- [Documentation](#Documentation)
+    - [Main commands](#Main-commands)
 - [Known issues/missing features](#Known-issues/missing-features)
 
 
 
+
+## Main features of this module so far
+- Creating a question. The only supported classes of questions are:
+    -  "essay" : the student answers in a white text box.
+    -  "multichoice" : the question comes with at least 2 possible answers.
+- All the options available in Moodle are available here (defining a grade, information for the grader, feedback, etc). See more details below.
+- Creating a category (family) of questions.
+- Supports Unicode within python and latex : éàê ...
+- Supports Latex syntax in Moodle : correctly supports inline latex with `$e^x$`, and equation with `$$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases}` etc
+
+## Quick start
 
 ### Simple examples from Python: 
 
@@ -101,19 +115,49 @@ Is every symmetric matrix invertible?
 \end{document}
 ```
 
-### Features of this module so far :
-- Creating a question. Supported classes of questions are:
-    -  "essay" : the student answers in a white text box. Options are :
-        - Possibility for the student to upload a file as an answer as well. 
-    -  "multichoice" : the question comes with at least 2 possible answers. Options are :
-        - Possibility to specify "multiple answers allowed" or "unique answer allowed"
-- All the options available in Moodle are available here (defining a grade, information for the grader, feedback, etc)
-- Creating a category (family) of questions
-- Adding a question to a given category
-- Export a category of questions under the format Moodle XML, which can be imported directly into Moodle.
-- Supports Unicode éàê ...
-- Supports Latex syntax : correctly supports inline latex with `$e^x$`, and equation with `$$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases}` etc
+## Documentation
+
+### Main commands
+
+#### The Category Class
+
+`category = Category(string)` creates an object of class Category. `string` here specifies the name of the category, which will appear in Moodle. It comes with a few methods:
+
+- `category.save(string)` creates an XML file under the XML Moodle format, ready to import within Moodle. The name of the file is the name of the category by default. If a `string` is given, the name of the file will be `string.xml`.
+- `category.description(string)` Adds a description to the category, which will appear in Moodle.
+
+#### The Question Class
+
+`question = Question(type)` creates an object of class Question. The `type` of the question can be `essay` (default) or `multichoice`. It comes with a family of methods `question.OPTION(value)` where `OPTION` describes every possible option that you can set in Moodle. The most important ones are:
+
+- `question.title(string)` sets the title of the question
+- `question.text(string)` sets the text (main body) of the question
+- `question.grade(float)` sets the grade of the quesiton
+- `question.graderinfo(string)` sets the information to be given to the grader
+- `question.addto(category)` adds the question to a `category`
+
+Methods specific to the `essay` type (answer via a text editor):
+- `question.responseformat(string)` : `editorfilepicker` lets the student upload a file as an answer (default) , `editor` forbids it.
+- `question.responserequired(bool)` : `0` if no response is required (default), `1` if a response is required.
+
+Methods specific to the `multichoice` type (finite number of possible answers):
+- `question.answer(string, value)` : Adds a possible answer to the question. `string` is the text of the answer, `value` describes if this answer is correct or no. It can be described in two ways:
+    - as a boolean `True` or `False` (default)
+    - as a percentage (integer between 0 and 100), which represents the fraction of the grade attributed to the answer. This is typically used for questions with more than 2 answers. A unique true answer has 100, a wrong answer has 0 (default)
+- `question.single(value)` : `true` if only one answer is possible (default), `false` if more than one answer can be selected by the student.
+
+### Main commands in Latex (bêta)
+
+It is possible to use a similar syntax within a TEX document :
+
+- `\begin{category}[name] ... \end{category}` defines the  environment corresponding to a category. It is possible to write various categories within the same document. `name` is the name of the category.
+- `\begin{question}[type] ... \end{question}` defines the  environment corresponding to a question. It is possible to write various question within the same category. `type` is the type of the question, `essay` by default.
+- All the methods mentioned above can be used in latex. The analogue of `.OPTION(value)` becomes `\OPTION{value}` in Latex (and must be placed within the corresponding environment). For instance :
+    - `\description{string}` sets the description of a category
+    - `\grade{float}` sets the grade of a question
+    - `\answer[value]{string}` adds an answer to a multichoice question
+
  
-### Known issues/missing features :
+## Known issues/missing features
 - for multichoice we never check that the sum of the fractions is equal to 100% 
 - for the latex package, there is issues with `newcommand` and `renewcommand` because for instance the document class `amsart` defines `text` but it is not the case for `article`.
