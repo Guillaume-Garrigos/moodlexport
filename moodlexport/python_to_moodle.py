@@ -1,7 +1,5 @@
 #!{sys.executable} -m pip install array-to-latex
 
-from moodlexport.tex_to_python import *
-
 from xml.dom.minidom import parseString
 from xml.sax.saxutils import unescape
 import xmltodict

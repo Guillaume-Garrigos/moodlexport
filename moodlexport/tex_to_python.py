@@ -24,9 +24,9 @@ def read_latex_question(latex_question):
             if isfield(field): # is it a field defined in DICT_DEFAULT_QUESTION_MOODLE ?
                 if field == 'answer': # cas un peu compliqué
                     if len(content.args) == 1: # pas d'option donc faux par défaut
-                        Answer(content.args[0].value, False).addto(question)
+                        question.answer(content.args[0].value, False)
                     elif len(content.args) == 2: # optional value for grade percentage
-                        Answer(content.args[1].value, content.args[0].value).addto(question)
+                        question.answer(content.args[1].value, content.args[0].value)
                 else: # general field, easy to manage
                     value = content.string # a string containing the value of the said option
                     getattr(question, field)(value)
