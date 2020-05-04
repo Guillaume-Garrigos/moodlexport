@@ -18,19 +18,12 @@ question = Question("essay")
 question.text("What is the derivative of $f(x) = e^x + 0.5 \Vert x \Vert^2$?")
 question.grade(1.5)
 question.save("my first question")
-              
-question = Question("multichoice")
-question.text("Is every symmetric matrix invertible?")
-question.grade(2.0)
-question.answer("Yes", False)
-question.answer("No", True)
-question.save("A multichoice question")
 ```
 
 ### Simple examples from Latex
 
 You can produce the same result as above by defining your question directly in a Latex file. 
-Suppose for isntance that you have a Latex file `myquestion.tex` containing one of the following : 
+Suppose for isntance that you have a Latex file `myquestion.tex` containing the following : 
 
 ```latex
 \documentclass{amsart}
@@ -39,19 +32,6 @@ Suppose for isntance that you have a Latex file `myquestion.tex` containing one 
 \begin{question}[essay]
 What is the derivative of $f(x) = e^x + 0.5 \Vert x \Vert^2$?
 \grade{1.5}
-\end{question}
-\end{document}
-```
-
-```latex
-\documentclass{amsart}
-\usepackage{latextomoodle}
-\begin{document}
-\begin{question}[multichoice]
-Is every symmetric matrix invertible?
-\answer[0]{Yes}
-\answer[100]{No}
-\grade{2.0}
 \end{question}
 \end{document}
 ```
