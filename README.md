@@ -6,6 +6,8 @@ This Python module provides code which allows to easily generate families of que
 - generating random problems is simpler in Python and can go way beyond what Moodle proposes
 - it is easier to store/manipulate locally a Latex or Python file than doing it on the Moodle interface. It also simplifies collaborating projects.
 
+It can be installed with a pip command : `pip install moodlexport`
+
 
 
 ### Simple examples from Python: 
@@ -40,7 +42,7 @@ Then you can convert this `myquestion.tex` file directly into a `readytoexport.x
 
 ```python
 from moodlexport import latextomoodle
-latextomoodle('myquestion.tex','readytoexport')
+latextomoodle('myquestion.tex','my first question')
 ```
 
 Note that if you wish to compile the `.tex` file without errors, you will need to place the Latex package `latextomoodle.sty` in the same folder. This package can be found in the latex folder of this project.
