@@ -8,6 +8,14 @@ This Python module provides code which allows to easily generate families of que
 
 It can be installed with a pip command : `pip install moodlexport`
 
+Some internal links within this documentation:
+- [Simple examples from Python](#Simple-examples-from-Python)
+- [Simple examples from Latex](#Simple-examples-from-Latex)
+- [Exporting many questions at once](#Exporting-many-questions-at-once)
+- [Features of this module so far](#Features-of-this-module-so-far)
+- [Known issues/missing features](#Known-issues/missing-features)
+
+
 
 
 ### Simple examples from Python: 
