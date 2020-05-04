@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="moodlexport", # Replace with your own username
-    version="0.0.3",
+    version="0.0.4",
     author="Guillaume Garrigos",
     author_email="guillaume.garrigos@lpsm.paris",
     description="A package to export test questions into Moodle from python or latex",
