@@ -28,7 +28,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
-dev/
+test_moodlexport/
 develop-eggs/
 dist/
 downloads/
