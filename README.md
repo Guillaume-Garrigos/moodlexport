@@ -157,6 +157,7 @@ It is possible to use a similar syntax within a TEX document :
     - `\grade{float}` sets the grade of a question
     - `\answer[value]{string}` adds an answer to a multichoice question
 
+The corresponding latex package can be found in the `latex` folder.
  
 ## Known issues/missing features
 - for multichoice we never check that the sum of the fractions is equal to 100% 
