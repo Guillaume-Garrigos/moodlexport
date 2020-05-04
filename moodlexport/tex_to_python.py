@@ -1,6 +1,5 @@
-# pip install texsoup
-
 from moodlexport.python_to_moodle import *
+
 from TexSoup import TexSoup
 from TexSoup.data import TexNode
 from TexSoup.utils import TokenWithPosition
@@ -37,9 +36,14 @@ def read_latex_question(latex_question):
     return question
 
 def read_latex_category(category_latex):
-    category = Category()
+    if len(category_latex.args) == 1: # we got a optional argument for category name
+        category = Category(category_latex.args[0].value)
+        list_contents = list(category_latex.contents)[1:] # we skip the 1st content which should be option
+    else:
+        category = Category()
+        list_contents = list(category_latex.contents)
     # we read all the contents and puts it in the structure
-    for content in list(category_latex.contents):
+    for content in list_contents:
         if isinstance(content, TexNode): # There should be just stuff like that
             field = str(content.name) # a string giving us the name of the option
             if field == 'name': # not is for some dark reason. same content, but not identity
@@ -58,15 +62,31 @@ def latextopython(file_name):
     soup = TexSoup(latex)
     category_list = []
     category_latex_list = list(soup.find_all('category'))
-    for category_latex in category_latex_list:
-        category_list.append(read_latex_category(category_latex))
+    if len(category_latex_list) > 0: # we list the categories and return them
+        for category_latex in category_latex_list:
+            category_list.append(read_latex_category(category_latex))
+    else: # well at least we hope to find questions so we create a dummy category
+        category = Category()
+        question_latex_list = list(soup.find_all('question'))
+        for question_latex in question_latex_list:
+            read_latex_question(question_latex).addto(category)
+        category_list = [category,]
     return category_list
 
-def latextomoodle(file_name):
+def latextomoodle(file_name, save_name = None):
     # converts a latex file into an XML file ready to export into Moodle
     category_list = latextopython(file_name)
+    counter = 1
     for category in category_list:
-        category.save()
+        if save_name is None:
+            category.save()
+        else:
+            if len(category_list) == 1:
+                string = save_name
+            else:
+                string = save_name + '_' + str(counter)  
+                counter = counter + 1              
+            category.save(string)
 
 
 

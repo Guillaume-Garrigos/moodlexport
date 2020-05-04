@@ -1,6 +1,6 @@
-#import sys
-#!{sys.executable} -m pip install xmltodict
 #!{sys.executable} -m pip install array-to-latex
+
+from moodlexport.tex_to_python import *
 
 from xml.dom.minidom import parseString
 from xml.sax.saxutils import unescape
@@ -9,7 +9,6 @@ import xmltodict
 import io
 import numpy as np  # only for np.bool ... too bad :/
 
-from moodlexport.tex_to_python import *
 
 ####################################
 ## GLOBAL CONSTANTS 
@@ -194,10 +193,15 @@ class Question():
     def addto(self, category):
         category.append(self)
     
-    def save(self): # saves the question without category in a single file
-        cat = Category()
+    def save(self, optional_name="Default category name"): 
+        # saves the question without category in a single file
+        cat = Category(optional_name)
         cat.append(self)
         cat.save()
+    
+    def answer(self, answer_text="This is a default answer", grade=0):
+        # appends an answer to the question. Calls the Answer class
+        Answer(answer_text, grade).addto(self)
 
 # Here we define automatically methods to assign values to Question fields
 
