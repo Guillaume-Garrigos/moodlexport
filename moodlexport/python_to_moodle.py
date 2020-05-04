@@ -194,7 +194,7 @@ class Question():
     def addto(self, category):
         category.append(self)
     
-    def save(self):
+    def save(self): # saves the question without category in a single file
         cat = Category()
         cat.append(self)
         cat.save()
