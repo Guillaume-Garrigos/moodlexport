@@ -8,6 +8,7 @@ setuptools.setup(
     version="0.0.7",
     author="Guillaume Garrigos",
     author_email="guillaume.garrigos@lpsm.paris",
+    license="MIT",
     description="A package to export test questions into Moodle from python or latex",
     long_description=long_description,
     long_description_content_type="text/markdown",
