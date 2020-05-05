@@ -1,4 +1,4 @@
-from test_moodlexport.python_to_moodle import *
+from moodlexport.python_to_moodle import *
 
 import requests
 import os.path
