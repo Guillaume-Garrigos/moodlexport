@@ -172,7 +172,7 @@ class Category():
         if file_name is None:
             file_name = self.getname()
         #if not os.path.isfile(file_name+'.tex'):
-        #    self.savetex(file_name)
+        self.savetex(file_name)
         os.system("latexmk -pdf "+file_name+".tex")
         os.system("latexmk -c "+file_name+".tex")
     
