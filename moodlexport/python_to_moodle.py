@@ -1,11 +1,15 @@
 #!{sys.executable} -m pip install array-to-latex
 
+import test_moodlexport.python_to_latex as python_to_latex
+
 from xml.dom.minidom import parseString
 from xml.sax.saxutils import unescape
 import xmltodict
 #import json
 import io
 import numpy as np  # only for np.bool ... too bad :/
+
+import os
 
 
 ####################################
@@ -142,6 +146,9 @@ class Category():
     def getname(self):
         return self.questions[0]['category']['text'][len('$module$/top/'):] # removes the $module$/top/
         
+    def getdescription(self):
+        return self.questions[0]['info']['text']
+        
     def append(self, question): # adds a Question to a Category
         self.questions.append(question.dict)
         self.question_objects.append(question)
@@ -152,6 +159,21 @@ class Category():
             file_name = self.getname()
         category_xml = xmltodict.unparse(self.dict, pretty=True)
         savestr(unescape(category_xml), file_name + ".xml")
+    
+    def savetex(self, file_name=None):
+        """ Save a category under the format TEX """
+        if file_name is None:
+            file_name = self.getname()
+        savestr(python_to_latex.latexfile_document(self), file_name + ".tex")
+       
+    def savepdf(self, file_name=None):
+        """ Save a category under the format PDF """
+        if file_name is None:
+            file_name = self.getname()
+        if not os.path.isfile(file_name+'.tex'):
+            self.savetex(file_name)
+        os.system("latexmk -pdf "+file_name+".tex")
+        os.system("latexmk -c "+file_name+".tex")
     
 
 
@@ -167,16 +189,19 @@ class Question():
     """
     def __init__(self, question_type="essay"):
         self.structure = DICT_DEFAULT_QUESTION_MOODLE # IMPORTANT
-        self.structure['@type']['default'] = question_type # "essay" by default
         # The proper question in a dictionary ready to turn into xml
         self.dict = {}
         for field in self.structure:
             self._set(field, self.structure[field]['default'])
+        self._set('@type', question_type)
         self.answer_objects = []
+        self.structure['answer']['value'] = []
                
     def _set(self, field, value=""):
         """ Assigns a value to a field of a Question """
         field_structure = self.structure[field]
+        field_structure['value'] = value
+        field_structure['isset'] = (value != self.structure[field]['default'])
         if 'attribute' not in field_structure: # no attributes, just stupid value to assign 
             self.dict[field] = value
         else: # we have attributes which means the field contains a <text> element
@@ -199,7 +224,10 @@ class Question():
     
     def answer(self, answer_text="This is a default answer", grade=0):
         # appends an answer to the question. Calls the Answer class
-        Answer(answer_text, grade).addto(self)
+        ans = Answer(answer_text, grade)
+        ans.addto(self)
+        self.structure['answer']['isset'] = True
+        self.structure['answer']['value'].append({'text' : answer_text, 'grade': ans.dict['@fraction'] })
 
 # Here we define automatically methods to assign values to Question fields
 

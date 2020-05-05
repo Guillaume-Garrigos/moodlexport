@@ -1,4 +1,4 @@
-from moodlexport.python_to_moodle import *
+from test_moodlexport.python_to_moodle import *
 
 from TexSoup import TexSoup
 from TexSoup.data import TexNode
