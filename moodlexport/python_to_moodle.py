@@ -1,4 +1,3 @@
-from moodlexport.python_to_latex import latexfile_document
 
 from xml.dom.minidom import parseString
 from xml.sax.saxutils import unescape
@@ -160,9 +159,11 @@ class Category():
     
     def savetex(self, file_name=None):
         """ Save a category under the format TEX """
+        import moodlexport.python_to_latex # SO ANNOYING CIRCULAR IMPORT
+        
         if file_name is None:
             file_name = self.getname()
-        savestr(python_to_latex.latexfile_document(self), file_name + ".tex")
+        savestr(moodlexport.python_to_latex.latexfile_document(self), file_name + ".tex")
        
     def savepdf(self, file_name=None):
         """ Save a category under the format PDF """
