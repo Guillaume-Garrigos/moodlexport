@@ -38,16 +38,17 @@ def latexfile_environement(env_name, value, option=None):
 
 def latexfile_append_question(question): #Given a Question return the latex string
     content = ""
-    for field in question.structure:
-        if field not in ['@type', 'questiontext', 'answer']: # keep it for later
-            if question.structure[field]['isset']: # if default we dont print it
-                content += latexfile_command(alias(field), question.structure[field]['value'])
-    content += latex_protect(question.structure['questiontext']['value'])
+    content += latex_protect(question.structure['questiontext']['value']) + '\n'
     option = question.structure['@type']['value']
     if (option == "multichoice") and (question.structure['answer']['isset']):
         content += '\n'
         for answer in question.structure['answer']['value']:
             content += latexfile_command('answer', answer['text'], str(answer['grade']))
+    content += '\n'
+    for field in question.structure:
+        if field not in ['@type', 'questiontext', 'answer']: # keep it for later
+            if question.structure[field]['isset']: # if default we dont print it
+                content += latexfile_command(alias(field), question.structure[field]['value'])
     return latexfile_environement('question', content, option)
 
 def latexfile_append_category(category): # Given a category return the latex string
