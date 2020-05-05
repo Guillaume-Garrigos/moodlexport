@@ -1,6 +1,4 @@
-#!{sys.executable} -m pip install array-to-latex
-
-import moodlexport.python_to_latex as python_to_latex
+from moodlexport.python_to_latex import latexfile_document
 
 from xml.dom.minidom import parseString
 from xml.sax.saxutils import unescape
