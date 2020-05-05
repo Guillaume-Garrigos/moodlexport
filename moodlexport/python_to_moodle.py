@@ -5,6 +5,7 @@ import xmltodict
 #import json
 import io
 import numpy as np  # only for np.bool ... too bad :/
+import copy
 
 import os
 
@@ -102,11 +103,11 @@ def html(string):
     else:
         return "<![CDATA[<p>\(\)" + latex_protect(string) + "</p>]]>"  # \(\) pour activer latex dans Moodle
 
-def set_oparg(name, default_value, **opargs): #optional argument manager
-    if name in opargs:
-        return opargs.get(name)
-    else:
+def set_oparg(variable, default_value): #optional argument manager
+    if variable is None:
         return default_value
+    else:
+        return variable
 
 ####################################
 ## CLASS : CATEGORY 
@@ -120,7 +121,9 @@ class Category():
         append(question) : adds a Question to the Category
         save(file_name) : save the Category into Moodle-XML
     """
-    def __init__(self, name="Default category name", description=""):
+    def __init__(self, name=None, description=None):
+        name = set_oparg(name, "Default category name")
+        description = set_oparg(description, "")
         self.dict = { "quiz": { "question": [{}] } }
         self.questions = self.dict["quiz"]["question"]
         self._set(name, description)
@@ -160,7 +163,6 @@ class Category():
     def savetex(self, file_name=None):
         """ Save a category under the format TEX """
         import moodlexport.python_to_latex # SO ANNOYING CIRCULAR IMPORT
-        
         if file_name is None:
             file_name = self.getname()
         savestr(moodlexport.python_to_latex.latexfile_document(self), file_name + ".tex")
@@ -186,8 +188,9 @@ class Question():
         Methods:
         _set(field, value) : e.g. _set("questiontext", "What is $2+2$?")
     """
-    def __init__(self, question_type="essay"):
-        self.structure = DICT_DEFAULT_QUESTION_MOODLE # IMPORTANT
+    def __init__(self, question_type=None):
+        question_type = set_oparg(question_type, "essay")
+        self.structure = copy.deepcopy(DICT_DEFAULT_QUESTION_MOODLE) # Need deep otherwise mess
         # The proper question in a dictionary ready to turn into xml
         self.dict = {}
         for field in self.structure:
@@ -196,7 +199,8 @@ class Question():
         self.answer_objects = []
         self.structure['answer']['value'] = []
                
-    def _set(self, field, value=""):
+    def _set(self, field, value=None):
+        value = set_oparg(value, "")
         """ Assigns a value to a field of a Question """
         field_structure = self.structure[field]
         field_structure['value'] = value
