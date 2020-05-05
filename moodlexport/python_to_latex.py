@@ -9,6 +9,7 @@ LATEX_PACKAGE_NAME = "latextomoodle"
 
 def latexfile_preamble(list_of_packages=[]):
     string = "\documentclass{article}\n"
+    string += "\\usepackage{amsmath}\n"
     for package in list_of_packages:
         string += latex_protect("\\usepackage{")+ package +"}\n"
     return string
