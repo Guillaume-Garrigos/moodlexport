@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="moodlexport", # Replace with your own username
-    version="0.0.8",
+    version="0.0.9",
     author="Guillaume Garrigos",
     author_email="guillaume.garrigos@lpsm.paris",
     license="MIT",
