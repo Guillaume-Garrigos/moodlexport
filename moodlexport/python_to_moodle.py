@@ -218,6 +218,9 @@ class Question():
             # now we just fill the field with a text element, and its attributes
             self.dict[field] = {**field_structure['attribute'], **{"text": value}} # concatenation needs Python >= 3.5
     
+    def get_text(): # Returns the string containing the text of the question
+        return self.dict['questiontext']['text']
+    
     def multi_answer(self): # unlocks the multiple answer mode
         self.dict["single"] = "false" #TBA : check sum fractions is 100 or all 0 etc
         
