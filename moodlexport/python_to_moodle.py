@@ -150,11 +150,15 @@ class Category():
         return self.questions[0]['info']['text']
         
     def append(self, question): # adds a Question to a Category
-        self.questions.append(question.dict)
         self.question_objects.append(question)
+    
+    def makedict(self): # extract all the questions the Category contains, and puts it in a dict
+        for question in self.question_objects:
+            self.questions.append(question.dict)
                 
-    def save(self, file_name=None):
+    def savexml(self, file_name=None):
         """ Save a category under the format Moodle XML """
+        self.makedict()
         if file_name is None:
             file_name = self.getname()
         category_xml = xmltodict.unparse(self.dict, pretty=True)
@@ -163,6 +167,7 @@ class Category():
     def savetex(self, file_name=None):
         """ Save a category under the format TEX """
         import moodlexport.python_to_latex # SO ANNOYING CIRCULAR IMPORT
+        self.makedict()
         if file_name is None:
             file_name = self.getname()
         savestr(moodlexport.python_to_latex.latexfile_document(self), file_name + ".tex")
