@@ -156,7 +156,7 @@ class Category():
         for question in self.question_objects:
             self.questions.append(question.dict)
                 
-    def savexml(self, file_name=None):
+    def save(self, file_name=None):
         """ Save a category under the format Moodle XML """
         self.makedict()
         if file_name is None:
