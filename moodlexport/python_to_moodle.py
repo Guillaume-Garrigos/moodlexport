@@ -152,13 +152,14 @@ class Category():
     def append(self, question): # adds a Question to a Category
         self.question_objects.append(question)
     
-    def makedict(self): # extract all the questions the Category contains, and puts it in a dict
+    def compilation(self): # extract all the questions the Category contains, and puts it in a dict
         for question in self.question_objects:
+            # compiler la question ici pour créer question.dict a partir de sa structure
             self.questions.append(question.dict)
                 
     def save(self, file_name=None):
         """ Save a category under the format Moodle XML """
-        self.makedict()
+        self.compilation()
         if file_name is None:
             file_name = self.getname()
         category_xml = xmltodict.unparse(self.dict, pretty=True)
@@ -167,7 +168,7 @@ class Category():
     def savetex(self, file_name=None):
         """ Save a category under the format TEX """
         import moodlexport.python_to_latex # SO ANNOYING CIRCULAR IMPORT
-        self.makedict()
+        self.compilation()
         if file_name is None:
             file_name = self.getname()
         savestr(moodlexport.python_to_latex.latexfile_document(self), file_name + ".tex")
@@ -241,12 +242,16 @@ class Question():
         self.structure['answer']['value'].append({'text' : answer_text, 'grade': ans.dict['@fraction'] })
 
 # Here we define automatically methods to assign values to Question fields
-
 for key in DICT_DEFAULT_QUESTION_MOODLE.keys():
     if key is not "answer": #  could be misinterpreted with Question.dict["answer"]
         setattr(Question, alias(key), lambda self, value, key=key: self._set(key, value))
         setattr(Question, key, lambda self, value, key=key: self._set(key, value))
 
+# Here we define automatically methods to get values from Question fields
+for key in DICT_DEFAULT_QUESTION_MOODLE.keys():
+    if key is not "answer": #  could be misinterpreted with Question.dict["answer"]
+        setattr(Question, "get_"+alias(key), lambda self, key=key: self.structure[key]['value'] )
+        setattr(Question, "get_"+key, lambda self, key=key: self.structure[key]['value'] )
 
 ####################################
 ## CLASS : ANSWER 
