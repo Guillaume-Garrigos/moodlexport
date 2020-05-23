@@ -121,47 +121,56 @@ class Category():
         append(question) : adds a Question to the Category
         save(file_name) : save the Category into Moodle-XML
     """
-    def __init__(self, name=None, description=None):
-        name = set_oparg(name, "Default category name")
-        description = set_oparg(description, "")
-        self.dict = { "quiz": { "question": [{}] } }
-        self.questions = self.dict["quiz"]["question"]
-        self._set(name, description)
-        self.question_objects = [] # will gather the objects themselves
-    
-    def _set(self, name="Default category name", description=""):
-        qcat = {
-            "@type": "category",
-            "category": {"text": "$module$/top/" + name},
-            "info": {"@format": "html", "text": html(description)}
-            }
-        self.questions[0] = qcat
+    def __init__(self, name=None):
+        self.structure = {
+            "name" : "",
+            "description" : "",
+            "path" : "",
+            "question" : []}
+        self.name(set_oparg(name, "Default-category-name"))
+        self.dict = {}
         
-    def name(self, string="Default category name"):
-        self.questions[0]['category']['text'] = "$module$/top/" + string
+    def name(self, string="Default-category-name"):
+        self.structure['name'] = string
         
     def description(self, string=""):
-        self.questions[0]['info']['text'] = html(string)
+        self.structure['description'] = string
         
-    def getname(self):
-        return self.questions[0]['category']['text'][len('$module$/top/'):] # removes the $module$/top/
+    def path(self, string=""): 
+        if len(string) > 0:
+            if string[-1] == "/":
+                self.structure['path'] = string
+            else:
+                raise ValueError("The path for a Category must end with a /")
         
-    def getdescription(self):
-        return self.questions[0]['info']['text']
+    def get_name(self):
+        return self.structure['name']
+        
+    def get_description(self):
+        return self.structure['description']
+        
+    def get_path(self):
+        return self.structure['path']
         
     def append(self, question): # adds a Question to a Category
-        self.question_objects.append(question)
+        self.structure['question'].append(question)
     
     def compilation(self): # extract all the questions the Category contains, and puts it in a dict
-        for question in self.question_objects:
-            # compiler la question ici pour créer question.dict a partir de sa structure
-            self.questions.append(question.dict)
+        question_init = {
+            "@type": "category",
+            "category": {"text": "$module$/top/" + self.get_path() + self.get_name() },
+            "info": {"@format": "html", "text": html(self.get_description())}
+        }
+        self.dict = { "quiz": {"question": [question_init] } }
+        for question in self.structure['question']:
+            # compiler la question ici pour créer question.dict a partir de sa structure ?
+            self.dict['quiz']['question'].append(question.dict)
                 
     def save(self, file_name=None):
         """ Save a category under the format Moodle XML """
         self.compilation()
         if file_name is None:
-            file_name = self.getname()
+            file_name = self.get_name()
         category_xml = xmltodict.unparse(self.dict, pretty=True)
         savestr(unescape(category_xml), file_name + ".xml")
     
@@ -170,13 +179,13 @@ class Category():
         import moodlexport.python_to_latex # SO ANNOYING CIRCULAR IMPORT
         self.compilation()
         if file_name is None:
-            file_name = self.getname()
+            file_name = self.get_name()
         savestr(moodlexport.python_to_latex.latexfile_document(self), file_name + ".tex")
        
     def savepdf(self, file_name=None):
         """ Save a category under the format PDF """
         if file_name is None:
-            file_name = self.getname()
+            file_name = self.get_name()
         #if not os.path.isfile(file_name+'.tex'):
         self.savetex(file_name)
         os.system("latexmk -pdf "+file_name+".tex")
