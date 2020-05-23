@@ -206,8 +206,7 @@ class Question():
     def __init__(self, question_type=None):
         question_type = set_oparg(question_type, "essay")
         self.structure = copy.deepcopy(DICT_DEFAULT_QUESTION_MOODLE) # Need deep otherwise mess
-        # The proper question in a dictionary ready to turn into xml
-        self.dict = {}
+        self.dict = {} # The proper question in a dictionary ready to turn into xml
         for field in self.structure:
             self._set(field, self.structure[field]['default'])
         self._set('@type', question_type)
@@ -215,8 +214,8 @@ class Question():
         self.structure['answer']['value'] = []
                
     def _set(self, field, value=None):
+        """ Assigns a value to a field of a Question. It is stored in both .structure and .dict """
         value = set_oparg(value, "")
-        """ Assigns a value to a field of a Question """
         field_structure = self.structure[field]
         field_structure['value'] = value
         field_structure['isset'] = (value != self.structure[field]['default'])
@@ -228,16 +227,13 @@ class Question():
             # now we just fill the field with a text element, and its attributes
             self.dict[field] = {**field_structure['attribute'], **{"text": value}} # concatenation needs Python >= 3.5
     
-    def get_text(self): # Returns the string containing the text of the question
-        return self.dict['questiontext']['text'].replace('<![CDATA[<p>\\(\\)','').replace('</p>]]>','')
-    
     def multi_answer(self): # unlocks the multiple answer mode
         self.dict["single"] = "false" #TBA : check sum fractions is 100 or all 0 etc
         
     def addto(self, category):
         category.append(self)
     
-    def save(self, optional_name="Default category name"): 
+    def save(self, optional_name="Default-category-name"): 
         # saves the question without category in a single file
         cat = Category(optional_name)
         cat.append(self)
@@ -271,49 +267,77 @@ class Answer():
         Object collecting an answer to a multichoice Question
     """
     def __init__(self, answer_text="This is a default answer", grade=0):
-        # we manage the default value of grade
-        # grade can be either a int/float (percentage of the grade) or a bool (is the answer true or not)
-        if isinstance(grade, bool) or isinstance(grade, np.bool):
-            if grade:
-                grade = 100
-            else:
-                grade = 0
-        # otherwise it is a number we leave it as it is
-        self.dict = {
-            '@fraction': grade, # by default an answer is false, and gives no points
-            '@format': 'html',
-            'text': html(answer_text), # content of the answer
-            'feedback': {
-                '@format': 'html',
-                'text': ""
-            }
+        grade = bool_to_grade(grade) #defined below
+        self.structure = {
+            'text' : answer_text,
+            'relativegrade' : grade,
+            'feedback' : "" 
         }
-    
+        self.dict = {}
+
+# SET FIELDS     
     def text(self, text):
-        self.dict['text'] = html(text)
+        self.structure['text'] = text
+        
+    def relativegrade(self, grade):# must be a number (int?) between 0 and 100, decribing how much it is worth. Or a bool.
+        grade = bool_to_grade(grade)
+        self.structure['relativegrade'] = bool_to_grade(grade) 
         
     def feedback(self, text):
-        self.dict['feedback']['text'] = html(text)
-        
-    def relativegrade(self, answer_fraction):
-        self.dict['@fraction'] = answer_fraction # must be a number (int?) between 0 and 100, decribing how much it is worth
+        self.structure['feedback'] = text
     
     def istrue(self): # Says that this answer is THE good one
         self.relativegrade(100)
         
-    def isfalse(self): # Says that this answer is THE good one
+    def isfalse(self): # Says that this answer is not good
         self.relativegrade(0)
+
+# GET FIELDS         
+    def get_text(self):
+        return self.structure['text']
+    
+    def get_relativegrade(self):
+        return self.structure['relativegrade']
+    
+    def get_feedback(self):
+        return self.structure['feedback']
+    
+# OTHER METHODS
+    def compilation(self): # prepares the answer by creating a dict
+        self.dict = {
+            '@fraction': self.structure['relativegrade'],
+            '@format': 'html',
+            'text': html(self.structure['text']),
+            'feedback': {
+                '@format': 'html',
+                'text': html(self.structure['feedback'])
+            }
+        }
         
-    def addto(self, question): # includes the answer into a question
-        """"""
-        if question.dict['@type'] == "multichoice":
+    def addto(self, question): # includes the answer into a question, do some checks before.
+        self.compilation()
+        if question.structure['@type']['value'] != "multichoice":
+            raise ValueError("Answers can only be added to a Question of type : multichoice. This can be set with the method Question.type('multichoice')")
+        else:
             if question.dict["answer"] == "": # if it is the first question we add
                 question.dict["answer"] = []
             question.dict["answer"].append(self.dict)
             question.answer_objects.append(self)
+
+# NEEDED FUNCTIONS
+def bool_to_grade(grade):
+    # we manage the default value of grade
+    # grade can be either a int/float (percentage of the grade) or a bool (is the answer true or not)
+    if isinstance(grade, bool) or isinstance(grade, np.bool):
+        if grade:
+            return 100
         else:
-            print('Error : answers can only be added to multichoice questions')
-                     
+            return 0
+    else: # it is already a number (we hope so)
+        if grade > 100 or grade < 0:
+            raise ValueError('For an Answer, the (relative) grade must be a number between 0 and 100, representing its precentage of "truthness".')
+        else:
+            return grade
 
 ####################################
 ## END
