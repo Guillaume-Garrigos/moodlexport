@@ -59,7 +59,7 @@ def read_latex_category(category_latex):
 
 def latextopython(file_name):
     # converts a latex file into a list of Category
-    with open(file_name, 'r', encoding='utf-8') as file:
+    with open(extension_checker(file_name,'tex'), 'r', encoding='utf-8') as file:
         latex = file.read()
     soup = TexSoup(latex)
     category_list = [] # The list of objects
@@ -90,7 +90,11 @@ def latextomoodle(file_name, save_name = None):
                 counter = counter + 1              
             category.savexml(string)
 
-
+def extension_checker(file_name, ext):
+    if file_name[-len(ext)-1:] != '.'+ext:
+        return file_name + '.'+ext
+    else:
+        return file_name
 
 
 

@@ -108,6 +108,11 @@ def set_oparg(variable, default_value): #optional argument manager
         return default_value
     else:
         return variable
+    
+def printmk(*tuple_of_text):
+    from IPython.display import display, Markdown
+    L = [Markdown(text) for text in tuple_of_text]
+    return display(*tuple(L))
 
 ####################################
 ## CLASS : CATEGORY 
