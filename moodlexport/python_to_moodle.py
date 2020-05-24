@@ -173,13 +173,16 @@ class Category():
             question.compilation()
             self.dict['quiz']['question'].append(question.dict)
                 
-    def save(self, file_name=None):
+    def savexml(self, file_name=None):
         """ Save a category under the format Moodle XML """
         self.compilation()
         if file_name is None:
             file_name = self.get_name()
         category_xml = xmltodict.unparse(self.dict, pretty=True)
         savestr(unescape(category_xml), file_name + ".xml")
+        
+    def save(self, file_name=None): #deprecated
+        self.savexml(file_name)
     
     def savetex(self, file_name=None):
         """ Save a category under the format TEX """
