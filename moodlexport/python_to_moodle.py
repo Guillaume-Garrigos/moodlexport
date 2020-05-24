@@ -55,7 +55,7 @@ DICT_DEFAULT_QUESTION_MOODLE = {
     "partiallycorrectfeedback": {'default': "Votre réponse est partiellement correcte.", 'attribute': {'@format': 'html'}},
     "incorrectfeedback": {'default': "Votre réponse est incorrecte.", 'attribute': {'@format': 'html'}},
     "shownumcorrect" : {'default': ""}, # No idea
-    "answer" : {'default': ""} # We deal with this in the Answer class
+    "answer" : {'default': "", 'list': []} # We deal with this in the Answer class
 }
 
 
@@ -142,6 +142,10 @@ class Category():
                 self.structure['path'] = string
             else:
                 raise ValueError("The path for a Category must end with a /")
+                
+    def question(self, number=None):
+        if number is None:
+            return self.structure['question']
         
     def get_name(self):
         return self.structure['name']
@@ -153,7 +157,7 @@ class Category():
         return self.structure['path']
         
     def append(self, question): # adds a Question to a Category
-        self.structure['question'].append(question)
+        question.addto(self)
     
     def compilation(self): # extract all the questions the Category contains, and puts it in a dict
         question_init = {
@@ -164,6 +168,7 @@ class Category():
         self.dict = { "quiz": {"question": [question_init] } }
         for question in self.structure['question']:
             # compiler la question ici pour créer question.dict a partir de sa structure ?
+            question.compilation()
             self.dict['quiz']['question'].append(question.dict)
                 
     def save(self, file_name=None):
@@ -210,8 +215,6 @@ class Question():
         for field in self.structure:
             self._set(field, self.structure[field]['default'])
         self._set('@type', question_type)
-        self.answer_objects = []
-        self.structure['answer']['value'] = []
                
     def _set(self, field, value=None):
         """ Assigns a value to a field of a Question. It is stored in both .structure and .dict """
@@ -229,22 +232,46 @@ class Question():
     
     def multi_answer(self): # unlocks the multiple answer mode
         self.dict["single"] = "false" #TBA : check sum fractions is 100 or all 0 etc
+    
+    def cumulated_grade(self): # sums the fractions of grade in the answers
+        if self.structure['answer']['isset']:
+            s = 0
+            for answer in self.structure['answer']['list']:
+                s += answer.structure['relativegrade']
+            return s
+        else:
+            return 100
         
     def addto(self, category):
-        category.append(self)
+        self.compilation()
+        category.structure['question'].append(self)
+        
+    def compilation(self):
+        # aussi vérifier que la somme des answer vaut 100 et passer l'option du multiquestion si necessaire?
+        if self.structure["answer"]["isset"]: # if there are answers
+            self.dict["answer"] = [] # instead of "" so far. Also reboots the dict if we did changes
+            for answer in self.structure["answer"]["list"]:
+                answer.compilation() # refresh the Answer.dict after eventual changes on Answer.structure
+                self.dict["answer"].append(answer.dict)
+                if answer.structure['relativegrade'] != 0 and answer.structure['relativegrade'] != 100: # we have multiple solutions
+                    self._set('single', 'false')
+                elif answer.structure['relativegrade'] == 100: # we have a unique solution
+                    self._set('single', 'true')
+                if self.cumulated_grade() != 100:
+                    raise ValueError('In a multichoice Question, the sum of the relative grades/percentages of the Answers must be exactly 100, but here is '+str(self.cumulated_grade()))
+                
     
     def save(self, optional_name="Default-category-name"): 
         # saves the question without category in a single file
         cat = Category(optional_name)
-        cat.append(self)
+        self.addto(cat)
         cat.save()
     
     def answer(self, answer_text="This is a default answer", grade=0):
         # appends an answer to the question. Calls the Answer class
         ans = Answer(answer_text, grade)
         ans.addto(self)
-        self.structure['answer']['isset'] = True
-        self.structure['answer']['value'].append({'text' : answer_text, 'grade': ans.dict['@fraction'] })
+        #self.structure['answer']['value'].append({'text' : answer_text, 'grade': ans.dict['@fraction'] })
 
 # Here we define automatically methods to assign values to Question fields
 for key in DICT_DEFAULT_QUESTION_MOODLE.keys():
@@ -319,10 +346,10 @@ class Answer():
         if question.structure['@type']['value'] != "multichoice":
             raise ValueError("Answers can only be added to a Question of type : multichoice. This can be set with the method Question.type('multichoice')")
         else:
-            if question.dict["answer"] == "": # if it is the first question we add
-                question.dict["answer"] = []
-            question.dict["answer"].append(self.dict)
-            question.answer_objects.append(self)
+            question.structure["answer"]["isset"] = True
+            question.structure["answer"]["list"].append(self)
+            if question.cumulated_grade() > 100:
+                raise ValueError("In this Question the sum of relative grades/percentages of the Answers appears to be >100.")
 
 # NEEDED FUNCTIONS
 def bool_to_grade(grade):
