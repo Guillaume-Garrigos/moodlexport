@@ -75,8 +75,14 @@ def latextopython(file_name):
         category_list = [category,]
     return category_list
 
-def latextomoodle(file_name, save_name = None):
+def latextomoodle(file_name=None, save_name = None):
     # converts a latex file into an XML file ready to export into Moodle
+    # if no file_name is given, parse the current directory and applies the function to every .tex files
+    if file_name is None:
+        import glob
+        for texfile in glob.glob("*.tex"):
+            latextomoodle(texfile)
+        return 
     category_list = latextopython(file_name)
     counter = 1
     for category in category_list:
