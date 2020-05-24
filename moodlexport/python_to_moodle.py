@@ -239,7 +239,7 @@ class Question():
         self.dict["single"] = "false" #TBA : check sum fractions is 100 or all 0 etc
         
     def has_answer(self):
-        return self.structure['answer']['isset']
+        return (self.get_type() == "multichoice") and self.structure['answer']['isset']
     
     def cumulated_grade(self): # sums the fractions of grade in the answers
         if self.structure['answer']['isset']:

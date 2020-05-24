@@ -39,27 +39,29 @@ def latexfile_environement(env_name, value, option=None):
 
 def latexfile_append_question(question): #Given a Question return the latex string
     content = ""
-    content += latex_protect(question.structure['questiontext']['value']) + '\n'
-    option = question.structure['@type']['value']
-    if (option == "multichoice") and (question.structure['answer']['isset']):
+    if question.structure['name']['isset']: # First the title
+        content += latexfile_command(alias('name'), question.get_name())
+    content += latex_protect(question.get_text()) + '\n'
+    option = question.get_type()
+    if question.has_answer():
         content += '\n'
-        for answer in question.structure['answer']['value']:
-            content += latexfile_command('answer', answer['text'], str(answer['grade']))
+        for answer in question.get_answer():
+            content += latexfile_command('answer', answer.get_text(), str(answer.get_relativegrade()))
     content += '\n'
     for field in question.structure:
-        if field not in ['@type', 'questiontext', 'answer']: # keep it for later
+        if field not in ['@type', 'questiontext', 'answer', 'name']: # keep it for later/before
             if question.structure[field]['isset']: # if default we dont print it
                 content += latexfile_command(alias(field), question.structure[field]['value'])
     return latexfile_environement('question', content, option)
 
 def latexfile_append_category(category): # Given a category return the latex string
     content = ""
-    description = category.getdescription()
+    description = category.get_description()
     if description != "":
         content += latexfile_command('description', description)
-    for question in category.question_objects:
+    for question in category.get_question():
         content += latexfile_append_question(question)
-    return latexfile_environement('category', content, category.getname())
+    return latexfile_environement('category', content, category.get_name())
 
 def latexfile_document(category, custom_package=True):
     if custom_package:
@@ -73,4 +75,4 @@ def latexfile_document(category, custom_package=True):
     return content
     
     
-
+# Would be nice to just get the .sty from local instead of dowloading
