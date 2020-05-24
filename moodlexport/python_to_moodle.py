@@ -377,7 +377,8 @@ def bool_to_grade(grade):
             return 100
         else:
             return 0
-    else: # it is already a number (we hope so)
+    else: # it is already an integer (we hope so)
+        grade = int(grade)
         if grade > 100 or grade < 0:
             raise ValueError('For an Answer, the (relative) grade must be a number between 0 and 100, representing its precentage of "truthness".')
         else:

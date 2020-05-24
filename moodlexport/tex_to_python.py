@@ -34,11 +34,11 @@ def read_latex_question(latex_question):
                     getattr(question, field)(value)
             else: # annoying, certainly valid latex, most RISKY part of the code
                 text = text + str(content)
-    question.text(cleanstr(text, raw=True))
+    question.text(cleanstr(text, raw=True)) # if we want to have more fancy text in moodle like with <p> it must be done here..
     return question
 
 def read_latex_category(category_latex):
-    if len(category_latex.args) == 1: # we got a optional argument for category name
+    if len(category_latex.args) == 1: # we got a optional argument, it is the category name
         category = Category(category_latex.args[0].value)
         list_contents = list(category_latex.contents)[1:] # we skip the 1st content which should be option
     else:
@@ -62,8 +62,8 @@ def latextopython(file_name):
     with open(file_name, 'r', encoding='utf-8') as file:
         latex = file.read()
     soup = TexSoup(latex)
-    category_list = []
-    category_latex_list = list(soup.find_all('category'))
+    category_list = [] # The list of objects
+    category_latex_list = list(soup.find_all('category')) # the list of latex-soup
     if len(category_latex_list) > 0: # we list the categories and return them
         for category_latex in category_latex_list:
             category_list.append(read_latex_category(category_latex))
@@ -81,14 +81,14 @@ def latextomoodle(file_name, save_name = None):
     counter = 1
     for category in category_list:
         if save_name is None:
-            category.save()
+            category.savexml()
         else:
             if len(category_list) == 1:
                 string = save_name
             else:
-                string = save_name + '_' + str(counter)  
+                string = save_name + '-' + str(counter)  
                 counter = counter + 1              
-            category.save(string)
+            category.savexml(string)
 
 
 
