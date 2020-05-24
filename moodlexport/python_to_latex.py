@@ -70,8 +70,8 @@ def latexfile_document(category):
     
 def create_latex_package():
     import pkgutil, io
-    string = pkgutil.get_data("moodlexport", "templates/latextomoodle.sty").decode()
     if not os.path.isfile('latextomoodle.sty') :
+        string = pkgutil.get_data("moodlexport", "templates/latextomoodle.sty").decode()
         savestr(string, 'latextomoodle.sty')
     
 # Would be nice to just get the .sty from local instead of dowloading
