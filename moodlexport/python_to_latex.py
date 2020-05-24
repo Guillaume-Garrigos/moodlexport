@@ -63,16 +63,15 @@ def latexfile_append_category(category): # Given a category return the latex str
         content += latexfile_append_question(question)
     return latexfile_environement('category', content, category.get_name())
 
-def latexfile_document(category, custom_package=True):
-    if custom_package:
-        content = latexfile_preamble([LATEX_PACKAGE_NAME])
-        if not os.path.isfile(LATEX_PACKAGE_NAME+'.sty') :
-            req = requests.get(LATEX_PACKAGE_URL)
-            savestr(req.text, LATEX_PACKAGE_NAME+'.sty')
-    else: 
-        content = latexfile_preamble()        
+def latexfile_document(category):
+    content = latexfile_preamble([LATEX_PACKAGE_NAME])
     content += latexfile_environement('document', latexfile_append_category(category))
     return content
     
+def create_latex_package():
+    import pkgutil, io
+    string = pkgutil.get_data("moodlexport", "templates/latextomoodle.sty").decode()
+    if not os.path.isfile('latextomoodle.sty') :
+        savestr(string, 'latextomoodle.sty')
     
 # Would be nice to just get the .sty from local instead of dowloading
