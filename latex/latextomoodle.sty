@@ -1,18 +1,31 @@
-%%%% Define a family of environments and comments that we can use to define Moodle questions/categories
+%%%% Define a family of environments and comments that we can use to define Moodle answers/questions/categories
 
+%%%%% ANSWER
+\usepackage{ifthen}
+\usepackage{wasysym}
+\newcommand{\goodanswer}{$\XBox$~}
+\newcommand{\badanswer}{$\Box$~}
+
+\newcommand{\answer}[2][]{
+	\ifthenelse{\equal{#1}{0}}
+		{~\newline \noindent \badanswer #2}
+		{~\newline \noindent \goodanswer #2}
+}
+
+%%%%% CATEGORY
 \newenvironment{category}[1][]{ \newpage \section{Catégorie: #1}   }{\bigskip}
 
 \newcommand{\name}[1]{}
 \renewcommand{\description}[1]{}
 
-
+%%%%% QUESTION
 \newenvironment{question}[1][]{\noindent \textbf{Question:}}{\bigskip}
 
-\newcommand{\answer}[2][]{\newline \noindent $\bullet$ #2}
-
-\newcommand{\type}[1]{}
 \renewcommand{\title}[1]{\textbf{(#1)}}
-%\renewcommand{\text}[1]{}
+\newcommand{\infocorrecteur}[1]{~\\ \noindent \textbf{Solution:} #1}
+
+% Dummy commands
+\newcommand{\type}[1]{}
 \newcommand{\generalfeedback}[1]{}
 \newcommand{\grade}[1]{}
 %\renewcommand{\penalty}[1]{}
@@ -23,7 +36,6 @@
 \newcommand{\responsefieldlines}[1]{}
 \newcommand{\attachments}[1]{}
 \newcommand{\attachmentsrequired}[1]{}
-\newcommand{\infocorrecteur}[1]{~\\ \noindent \textbf{Solution:} #1}
 \newcommand{\responsetemplate}[1]{}
 \newcommand{\single}[1]{}
 \newcommand{\shuffleanswers}[1]{}
