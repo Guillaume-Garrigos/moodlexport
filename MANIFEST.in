@@ -1,1 +1,1 @@
-recursive-include moodlexport *
+recursive-include moodlexport *.sty
