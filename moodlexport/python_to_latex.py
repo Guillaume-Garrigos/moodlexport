@@ -64,6 +64,7 @@ def latexfile_append_category(category): # Given a category return the latex str
     return latexfile_environement('category', content, category.get_name())
 
 def latexfile_document(category):
+    create_latex_package()
     content = latexfile_preamble([LATEX_PACKAGE_NAME])
     content += latexfile_environement('document', latexfile_append_category(category))
     return content
