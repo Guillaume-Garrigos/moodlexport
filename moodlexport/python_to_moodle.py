@@ -201,8 +201,9 @@ class Category():
         """ Save a category under the format PDF """
         if file_name is None:
             file_name = self.get_name()
-        #if not os.path.isfile(file_name+'.tex'):
         self.savetex(file_name)
+        import moodlexport.python_to_latex
+        moodlexport.python_to_latex.import_latextomoodle()
         os.system("latexmk -pdf "+file_name+".tex")
         os.system("latexmk -c "+file_name+".tex")
     
