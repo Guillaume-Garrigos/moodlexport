@@ -1,6 +1,6 @@
 %%%% Define a family of environments and comments that we can use to define Moodle questions/categories
 
-\newenvironment{category}[1][]{}{\bigskip}
+\newenvironment{category}[1][]{ \newpage \section{Catégorie: #1}   }{\bigskip}
 
 \newcommand{\name}[1]{}
 \renewcommand{\description}[1]{}
@@ -11,7 +11,7 @@
 \newcommand{\answer}[2][]{\newline \noindent $\bullet$ #2}
 
 \newcommand{\type}[1]{}
-\renewcommand{\title}[1]{}
+\renewcommand{\title}[1]{\textbf{(#1)}}
 %\renewcommand{\text}[1]{}
 \newcommand{\generalfeedback}[1]{}
 \newcommand{\grade}[1]{}
