@@ -146,6 +146,8 @@ class Category():
     def question(self, number=None):
         if number is None:
             return self.structure['question']
+        else: # we assume it is an integer
+            return self.structure['question'][number]
         
     def get_name(self):
         return self.structure['name']
