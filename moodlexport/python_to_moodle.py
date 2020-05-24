@@ -143,7 +143,7 @@ class Category():
             else:
                 raise ValueError("The path for a Category must end with a /")
                 
-    def question(self, number=None):
+    def get_question(self, number=None):
         if number is None:
             return self.structure['question']
         else: # we assume it is an integer
@@ -234,6 +234,9 @@ class Question():
     
     def multi_answer(self): # unlocks the multiple answer mode
         self.dict["single"] = "false" #TBA : check sum fractions is 100 or all 0 etc
+        
+    def has_answer(self):
+        return self.structure['answer']['isset']
     
     def cumulated_grade(self): # sums the fractions of grade in the answers
         if self.structure['answer']['isset']:
@@ -250,7 +253,7 @@ class Question():
         
     def compilation(self):
         # aussi vérifier que la somme des answer vaut 100 et passer l'option du multiquestion si necessaire?
-        if self.structure["answer"]["isset"]: # if there are answers
+        if self.has_answer(): # if there are answers
             self.dict["answer"] = [] # instead of "" so far. Also reboots the dict if we did changes
             for answer in self.structure["answer"]["list"]:
                 answer.compilation() # refresh the Answer.dict after eventual changes on Answer.structure
@@ -274,6 +277,15 @@ class Question():
         ans = Answer(answer_text, grade)
         ans.addto(self)
         #self.structure['answer']['value'].append({'text' : answer_text, 'grade': ans.dict['@fraction'] })
+    
+    def get_answer(self, number=None): # give access
+        if self.has_answer():
+            if number is None:
+                return self.structure['answer']['list']
+            else:
+                return self.structure['answer']['list'][number]
+        else:
+            raise ValueError('This Question has no Answer')
 
 # Here we define automatically methods to assign values to Question fields
 for key in DICT_DEFAULT_QUESTION_MOODLE.keys():
