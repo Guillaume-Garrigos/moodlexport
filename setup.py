@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="moodlexport", # Replace with your own username
+    name="moodlexport",
     version="0.0.10",
     author="Guillaume Garrigos",
     author_email="guillaume.garrigos@lpsm.paris",
