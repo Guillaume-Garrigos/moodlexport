@@ -197,7 +197,6 @@ class Category():
             file_name = self.get_name()
         string = moodlexport.python_to_latex.latexfile_document(self)
         string = string.replace('<br/>','\n') #renders better in Latex
-        print(string)
         savestr(string, file_name + ".tex")
        
     def savepdf(self, file_name=None):
