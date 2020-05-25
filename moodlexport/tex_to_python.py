@@ -34,7 +34,10 @@ def read_latex_question(latex_question):
                     getattr(question, field)(value)
             else: # annoying, certainly valid latex, most RISKY part of the code
                 text = text + str(content)
-    question.text(cleanstr(text, raw=True)) # if we want to have more fancy text in moodle like with <p> it must be done here..
+    #question.text(cleanstr(text, raw=True)) # if we want to have more fancy text in moodle like with <p> it must be done here..
+    text = text.replace('\t','')
+    text = text.replace('\n','<br/>')
+    question.text(text) # on enlève juste les tabs, on met les /n en <br/>
     return question
 
 def read_latex_category(category_latex):
