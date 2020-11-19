@@ -253,8 +253,8 @@ class Question():
         if self.structure['answer']['isset']:
             s = 0
             for answer in self.structure['answer']['list']:
-            	if answer.structure['relativegrade'] > 0:
-                	s += answer.structure['relativegrade']
+                if answer.structure['relativegrade'] > 0:
+                    s += answer.structure['relativegrade']
             return s
         else:
             return 100
@@ -343,7 +343,7 @@ class Answer():
         self.relativegrade(100)
         
     def isfalse(self): # Says that this answer is not good
-      	self.relativegrade(0)
+        self.relativegrade(0)
 
 # GET FIELDS         
     def get_text(self):
