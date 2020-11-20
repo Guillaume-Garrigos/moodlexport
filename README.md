@@ -28,7 +28,8 @@ Some internal links within this documentation:
 - All the options available in Moodle are available here (defining a grade, information for the grader, feedback, etc). See more details below.
 - Creating a category (family) of questions.
 - Supports Unicode within python and latex : éàê ...
-- Supports Latex syntax in Moodle : correctly supports inline latex with `$e^x$`, and equation with `$$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases}` etc
+- Supports Latex syntax in Moodle : correctly supports inline latex with `$e^x$`, `\(e^x\)`, and equation with `$$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases}` etc
+- :warning: Inline latex can be very tricky, depending on which version of Moodle you are using, and how the admin set it up. The inline formula `$e^x$` is the most 'fragile'. It seems that the inline formula `\(e^x\)` is more likely to work.
 
 ## Quick start
 
