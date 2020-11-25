@@ -1,6 +1,7 @@
 
 
-from moodlexport.python_to_moodle import Category, Question, isfield, cleanstr
+from moodlexport.python_to_moodle import Category, Question
+from moodlexport.string_manager import isfield, cleanstr
 
 from TexSoup import TexSoup
 from TexSoup.data import TexNode

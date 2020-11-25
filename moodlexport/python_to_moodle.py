@@ -1,118 +1,11 @@
 
-from xml.dom.minidom import parseString
 from xml.sax.saxutils import unescape
 import xmltodict
-#import json
-import io
 import numpy as np  # only for np.bool ... too bad :/
 import copy
-
 import os
 
-
-####################################
-## GLOBAL CONSTANTS 
-####################################
-
-# Dirty but needed : all the fields required to create a question
-# We also set their default value, and an alias when the fields has a weird/toolong name
-DICT_DEFAULT_QUESTION_MOODLE = { 
-    # general stuff
-    '@type': {'default': "essay", 
-              'alias': 'type'
-             }, # can be "multichoice" for MCQs
-    "name": {'default': "Default question title", 
-             'attribute': {'@format': 'txt'}, 
-             'alias': 'title'
-            },
-    "questiontext": {'default': "Default question text", 
-                     'attribute': {'@format': 'html'}, 
-                     'alias': 'text'
-                    },
-    "generalfeedback": {'default': "", 'attribute': {'@format': 'html'}},
-    "defaultgrade": {'default': 1.0, 
-                     'alias': 'grade'
-                    },
-    "penalty": {'default': 0.0},
-    "hidden": {'default': 0},
-    "idnumber": {'default': ""},
-    # 'essay' specifics
-    "responseformat": {'default': "editorfilepicker"}, # by default allow to upload a file as answer. Set "editor" ottherwise
-    "responserequired": {'default': 0}, # 0 for no response required, 1 for yes
-    "responsefieldlines": {'default': 10},
-    "attachments": {'default': -1}, # number of attachments allowed. -1 is infinty
-    "attachmentsrequired": {'default': 0}, # 0 for no attachment required, 1 for yes
-    "graderinfo": {'default': "", # correction for the grader
-                   'attribute': {'@format': 'html'}, 
-                   'alias': 'infocorrecteur'
-                  }, 
-    "responsetemplate": {'default': "", 'attribute': {'@format': 'html'}},
-    # 'multichoice' specifics
-    "single" : {'default': "true"}, # Says if only a unique answer is possible
-    "shuffleanswers" : {'default': "true"}, # Constantly shuffles the possible choices
-    "answernumbering" : {'default': "none"}, # Other choices : 'abc', '123', 'iii', and certainly caps
-    "correctfeedback": {'default': "Votre réponse est correcte.", 'attribute': {'@format': 'html'}},
-    "partiallycorrectfeedback": {'default': "Votre réponse est partiellement correcte.", 'attribute': {'@format': 'html'}},
-    "incorrectfeedback": {'default': "Votre réponse est incorrecte.", 'attribute': {'@format': 'html'}},
-    "shownumcorrect" : {'default': ""}, # No idea
-    "answer" : {'default': "", 'list': []} # We deal with this in the Answer class
-}
-
-
-# to deal with mess between Latex, python and xml special characters
-# \u and \x not supported but useless for inline latex?
-UNESCAPE_LATEX = { '\x07':'\\a', '\x0c':'\\f', '\x0b':'\\v', '\x08':'\\b', '\n': '\\n', '\r':'\\r', '\t':'\\t' } 
-
-
-####################################
-## STRING FUNCTIONS
-####################################
-
-def alias(field): # easy access to alias
-    if 'alias' in DICT_DEFAULT_QUESTION_MOODLE[field]:
-        return DICT_DEFAULT_QUESTION_MOODLE[field]['alias']
-    else:
-        return field
-
-def isfield(string):
-    for key in DICT_DEFAULT_QUESTION_MOODLE.keys():
-        if string in [key, alias(key)]:
-            return True
-    return False
-
-def cleanstr(string, raw=False):
-    if raw:
-        string = string.replace('\t','') # no tabs
-        string = string.replace('\n','') # no linebreak
-    else:
-        string = string.replace('\t','  ') # double space instead of tabs
-    return string
-
-def savestr(string, filename="new.txt", raw=False):
-    string = cleanstr(string, raw)
-    text_file = io.open(filename, "w", encoding='utf8') # essential for accents and other characters
-    text_file.write(string)
-    text_file.close()
-
-def latex_protect(string):
-    return unescape(string, UNESCAPE_LATEX)
-    
-def html(string):
-    if string is "":
-        return string
-    else:
-        return "<![CDATA[<p>\(\)" + latex_protect(string) + "</p>]]>"  # \(\) pour activer latex dans Moodle
-
-def set_oparg(variable, default_value): #optional argument manager
-    if variable is None:
-        return default_value
-    else:
-        return variable
-    
-def printmk(*tuple_of_text):
-    from IPython.display import display, Markdown
-    L = [Markdown(text) for text in tuple_of_text]
-    return display(*tuple(L))
+from moodlexport.string_manager import dict_default_question_moodle
 
 ####################################
 ## CLASS : CATEGORY 
@@ -223,7 +116,7 @@ class Question():
     """
     def __init__(self, question_type=None):
         question_type = set_oparg(question_type, "essay")
-        self.structure = copy.deepcopy(DICT_DEFAULT_QUESTION_MOODLE) # Need deep otherwise mess
+        self.structure = copy.deepcopy(dict_default_question_moodle()) # Need deep otherwise mess
         self.dict = {} # The proper question in a dictionary ready to turn into xml
         for field in self.structure:
             self._set(field, self.structure[field]['default'])
@@ -300,13 +193,13 @@ class Question():
             raise ValueError('This Question has no Answer')
 
 # Here we define automatically methods to assign values to Question fields
-for key in DICT_DEFAULT_QUESTION_MOODLE.keys():
+for key in dict_default_question_moodle().keys():
     if key is not "answer": #  could be misinterpreted with Question.dict["answer"]
         setattr(Question, alias(key), lambda self, value, key=key: self._set(key, value))
         setattr(Question, key, lambda self, value, key=key: self._set(key, value))
 
 # Here we define automatically methods to get values from Question fields
-for key in DICT_DEFAULT_QUESTION_MOODLE.keys():
+for key in dict_default_question_moodle().keys():
     if key is not "answer": #  could be misinterpreted with Question.dict["answer"]
         setattr(Question, "get_"+alias(key), lambda self, key=key: self.structure[key]['value'] )
         setattr(Question, "get_"+key, lambda self, key=key: self.structure[key]['value'] )

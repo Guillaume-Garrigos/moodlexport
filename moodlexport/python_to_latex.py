@@ -1,5 +1,6 @@
 
-from moodlexport.python_to_moodle import Category, Question, latex_protect, alias, savestr
+from moodlexport.python_to_moodle import Category, Question
+from moodlexport.string_manager import latex_protect, alias, savestr
 
 import requests
 import os.path
