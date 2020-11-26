@@ -30,7 +30,7 @@ Some internal links within this documentation:
 - Creating a category (family) of questions.
 - Supports Unicode within python and latex : éàê ...
 - Supports Latex syntax, whether you write from latex or python, in way that Moodle understands. Supports inline latex with `$e^x$`, `\(e^x\)`, and equation with `$$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases}` etc
-- Supports export to Moodle via a XML 
+- Supports export to Moodle via a XML MOODLE file, but also to .tex and .pdf files (which allow more easily to see what you are doing)
 
 ## Quick start
 
