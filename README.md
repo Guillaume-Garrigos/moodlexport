@@ -16,6 +16,7 @@ Some internal links within this documentation:
     - [Exporting many questions at once](#Exporting-many-questions-at-once)
 - [Documentation](#Documentation)
     - [Main commands](#Main-commands)
+- [Changelog](#Changelog)
 - [Known issues/missing features](#Known-issues/missing-features)
 
 
@@ -28,8 +29,8 @@ Some internal links within this documentation:
 - All the options available in Moodle are available here (defining a grade, information for the grader, feedback, etc). See more details below.
 - Creating a category (family) of questions.
 - Supports Unicode within python and latex : éàê ...
-- Supports Latex syntax in Moodle : correctly supports inline latex with `$e^x$`, `\(e^x\)`, and equation with `$$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases}` etc
-- :warning: Inline latex can be very tricky, depending on which version of Moodle you are using, and how the admin set it up. The inline formula `$e^x$` is the most 'fragile'. It seems that the inline formula `\(e^x\)` is more likely to work.
+- Supports Latex syntax, whether you write from latex or python, in way that Moodle understands. Supports inline latex with `$e^x$`, `\(e^x\)`, and equation with `$$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases}` etc
+- Supports export to Moodle via a XML 
 
 ## Quick start
 
@@ -124,7 +125,9 @@ Is every symmetric matrix invertible?
 
 `category = Category(string)` creates an object of class Category. `string` here specifies the name of the category, which will appear in Moodle. It comes with a few methods:
 
-- `category.save(string)` creates an XML file under the XML Moodle format, ready to import within Moodle. The name of the file is the name of the category by default. If a `string` is given, the name of the file will be `string.xml`.
+- `category.savexml(string)` creates an XML file under the XML Moodle format, ready to import within Moodle. The name of the file is the name of the category by default. If a `string` is given, the name of the file will be `string.xml`.
+- `category.savetex(string)` creates a TEX file, containing all the questions of the category, nicely displayed. The name of the file is the name of the category by default (spaces and underscores will be replaced with `-`). If a `string` is given, the name of the file will be `string.tex`.
+- `category.savepdf(string)` creates a TEX file as above and then compiles it to generated a PDF file. It requires that you have the Latex package `latextomoodle.sty` in the same folder, or an active internet connexion so the script can download it for you.
 - `category.description(string)` Adds a description to the category, which will appear in Moodle.
 
 #### The Question Class
@@ -159,7 +162,17 @@ It is possible to use a similar syntax within a TEX document :
     - `\answer[value]{string}` adds an answer to a multichoice question
 
 The corresponding latex package can be found in the `latex` folder.
- 
+
+
+## Changelog
+
+- v.0.0.20
+    - I realized that depending on Moodle's version, or depending on how the administrator implements it, inline math like `$e^x$` can not be recognized. Moodle's doc [says](https://docs.moodle.org/3x/fr/Utilisation_de_la_notation_TeX) it is not supported. So, now, every inline math `$e^x$` is converted into `\(e^x\)` just before exporting the data into XML. This allows the user to painlessly type latex as usual with `$`'s.
+    - Now TEX files are generated without spaces or `_` in the filename. Because latexmk wasn't happy when generating pdfs.
+- v.0.0.19
+    - Corrects bug #3 for multichoice questions, allowing now for negative grades for wrong answers. Proposed by [@Stivanification](https://github.com/Stivanification).
+    - Corrects bug #2 caused by a broken backcompatibility from the TexSoup Module. Now this module requires the exact needed version
+
 ## Known issues/missing features
-- for multichoice we never check that the sum of the fractions is equal to 100% 
 - for the latex package, there is issues with `newcommand` and `renewcommand` because for instance the document class `amsart` defines `text` but it is not the case for `article`.
+- So far I have a bad time handling breaklines in a text written in python. Using explicit `<br/>` tags should do the job.

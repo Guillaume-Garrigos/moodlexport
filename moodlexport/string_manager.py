@@ -89,7 +89,7 @@ def isfield(string):
 def cleanstr(string, raw=False):
     if raw:
         string = string.replace('\t','') # no tabs
-        string = string.replace('\n','') # no linebreak
+        string = string.replace('\n','') # no linebreak BEWARE this might destroy protected string
     else:
         string = string.replace('\t','  ') # double space instead of tabs
     return string
@@ -107,7 +107,7 @@ def html(string):
     if string is "":
         return string
     else:
-        return "<![CDATA[<p>\(\)" + latex_protect(string) + "</p>]]>"  # \(\) pour activer latex dans Moodle
+        return "<![CDATA[<p>\(\)" + tex_parse_dollar(latex_protect(string)) + "</p>]]>"  # \(\) is a hack to activate latex dans Moodle. Not always needed, not always working. Still a mystery to me.
 
 def set_oparg(variable, default_value): #optional argument manager
     if variable is None:
@@ -131,21 +131,6 @@ def printmk(*tuple_of_text):
 
 
 # Taken from https://gist.github.com/erezsh/1f834f7d203cb1ac89b5b3aa877fa634
-
-
-lark = Lark(r'''
-         tex: (mathmode_offset | mathmode_inline | TEXT)+
-         mathmode_offset: OFFSETDOLLAR TEXT+ OFFSETDOLLAR | OFFSETOPEN TEXT+ OFFSETCLOSE
-         mathmode_inline: INLINEOPEN TEXT+ INLINECLOSE | INLINE TEXT+ INLINE
-         INLINE: "$"
-         INLINEOPEN: "\\("
-         INLINECLOSE: "\\)"
-         OFFSETDOLLAR: "$$"
-         OFFSETOPEN: "\\["
-         OFFSETCLOSE: "\\]"
-         TEXT: /[^\]$]+/s
-         ''', start='tex', parser='lalr')
-
 class T(Transformer):
     def mathmode_offset(self, children):
         return '\\[' + ''.join(children[1:-1]) + '\\]'
@@ -157,7 +142,19 @@ class T(Transformer):
         return ''.join(children)
 
 def tex_parse_dollar(string):
-    return T().transform(lark.parse(string.replace('\n', '')))
+    lark = Lark(r'''
+         tex: (mathmode_offset | mathmode_inline | TEXT)+
+         mathmode_offset: OFFSETDOLLAR TEXT+ OFFSETDOLLAR | OFFSETOPEN TEXT+ OFFSETCLOSE
+         mathmode_inline: INLINEOPEN TEXT+ INLINECLOSE | INLINE TEXT+ INLINE
+         INLINE: "$"
+         INLINEOPEN: "\\("
+         INLINECLOSE: "\\)"
+         OFFSETDOLLAR: "$$"
+         OFFSETOPEN: "\\["
+         OFFSETCLOSE: "\\]"
+         TEXT: /[^\]$]+/s
+         ''', start='tex', parser='lalr')
+    return T().transform(lark.parse(string)) # string.replace('\n', '') destroys the protected \\n, we need to be smarter here
 
 def test_tex_parse_dollar():
     TEST_BAG = { 

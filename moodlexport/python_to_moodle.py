@@ -5,7 +5,9 @@ import numpy as np  # only for np.bool ... too bad :/
 import copy
 import os
 
-from moodlexport.string_manager import dict_default_question_moodle
+from moodlexport.string_manager import dict_default_question_moodle, set_oparg, tex_parse_dollar
+import moodlexport.string_manager as strtools
+
 
 ####################################
 ## CLASS : CATEGORY 
@@ -63,7 +65,7 @@ class Category():
         question_init = {
             "@type": "category",
             "category": {"text": "$module$/top/" + self.get_path() + self.get_name() },
-            "info": {"@format": "html", "text": html(self.get_description())}
+            "info": {"@format": "html", "text": strtools.html(self.get_description())}
         }
         self.dict = { "quiz": {"question": [question_init] } }
         for question in self.structure['question']:
@@ -77,7 +79,7 @@ class Category():
         if file_name is None:
             file_name = self.get_name()
         category_xml = xmltodict.unparse(self.dict, pretty=True)
-        savestr(unescape(category_xml), file_name + ".xml")
+        strtools.savestr(unescape(category_xml), file_name + ".xml")
         
     def save(self, file_name=None): #deprecated
         self.savexml(file_name)
@@ -90,7 +92,7 @@ class Category():
             file_name = self.get_name()
         string = moodlexport.python_to_latex.latexfile_document(self)
         string = string.replace('<br/>','\n') #renders better in Latex
-        savestr(string, file_name + ".tex")
+        strtools.savestr(string, file_name.replace(' ','-').replace('_','-') + ".tex")
        
     def savepdf(self, file_name=None):
         """ Save a category under the format PDF """
@@ -132,7 +134,7 @@ class Question():
             self.dict[field] = value
         else: # we have attributes which means the field contains a <text> element
             if 'html' in field_structure['attribute'].values(): # the value is a string to be turned...
-                value = html(value)                             # ... into a html string (tackles latex, <p>'s and stuff)
+                value = strtools.html(value)                             # ... into a html string (tackles latex, <p>'s and stuff)
             # now we just fill the field with a text element, and its attributes
             self.dict[field] = {**field_structure['attribute'], **{"text": value}} # concatenation needs Python >= 3.5
     
@@ -195,13 +197,13 @@ class Question():
 # Here we define automatically methods to assign values to Question fields
 for key in dict_default_question_moodle().keys():
     if key is not "answer": #  could be misinterpreted with Question.dict["answer"]
-        setattr(Question, alias(key), lambda self, value, key=key: self._set(key, value))
+        setattr(Question, strtools.alias(key), lambda self, value, key=key: self._set(key, value))
         setattr(Question, key, lambda self, value, key=key: self._set(key, value))
 
 # Here we define automatically methods to get values from Question fields
 for key in dict_default_question_moodle().keys():
     if key is not "answer": #  could be misinterpreted with Question.dict["answer"]
-        setattr(Question, "get_"+alias(key), lambda self, key=key: self.structure[key]['value'] )
+        setattr(Question, "get_"+strtools.alias(key), lambda self, key=key: self.structure[key]['value'] )
         setattr(Question, "get_"+key, lambda self, key=key: self.structure[key]['value'] )
 
 ####################################
@@ -253,10 +255,10 @@ class Answer():
         self.dict = {
             '@fraction': self.structure['relativegrade'],
             '@format': 'html',
-            'text': html(self.structure['text']),
+            'text': strtools.html(self.structure['text']),
             'feedback': {
                 '@format': 'html',
-                'text': html(self.structure['feedback'])
+                'text': strtools.html(self.structure['feedback'])
             }
         }
         
