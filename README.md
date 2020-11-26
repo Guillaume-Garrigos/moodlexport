@@ -150,6 +150,7 @@ Methods specific to the `multichoice` type (finite number of possible answers):
     - as a percentage (integer between 0 and 100), which represents the fraction of the grade attributed to the answer. This is typically used for questions with more than 2 answers. A unique true answer has 100, a wrong answer has 0 (default)
 - `question.single(value)` : `true` if only one answer is possible (default), `false` if more than one answer can be selected by the student.
 
+
 ### Main commands in Latex (bêta)
 
 It is possible to use a similar syntax within a TEX document :
@@ -162,6 +163,23 @@ It is possible to use a similar syntax within a TEX document :
     - `\answer[value]{string}` adds an answer to a multichoice question
 
 The corresponding latex package can be found in the `latex` folder.
+
+To convert a .tex file into an .xml, use
+
+```
+from moodlexport import latextomoodle
+latextomoodle('file_name.tex')
+```
+
+You can also import the contents of your .tex file directly into python (you might want to do some modifications before exporting to Moodle). You .tex file must contain one or more categories of questions. To do so, use : 
+
+```
+from moodlexport import latextopython
+list_of_categories = latextopython('file_name.tex') # it outputs a list of Category objects, even if you have only one category.
+```
+
+
+
 
 
 ## Changelog

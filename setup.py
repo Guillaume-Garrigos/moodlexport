@@ -21,8 +21,9 @@ setuptools.setup(
     ],
     python_requires='>=3.7',
     install_requires=[
-   'texsoup == 0.2.1',
-   'xmltodict >= 0.12.0',
+    'texsoup == 0.2.1',
+    'xmltodict >= 0.12.0',
+    'lark-parser == 0.11.1'
     ],
     include_package_data=True,
 )
