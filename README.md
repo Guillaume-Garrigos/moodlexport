@@ -15,7 +15,8 @@ Some internal links within this documentation:
     - [Simple examples from Latex](#Simple-examples-from-Latex)
     - [Exporting many questions at once](#Exporting-many-questions-at-once)
 - [Documentation](#Documentation)
-    - [Main commands](#Main-commands)
+    - [Main commands from Python](#Main-commands-from-Python)
+    - [Main commands from Latex](#Main-commands-from-Latex)
 - [Changelog](#Changelog)
 - [Known issues/missing features](#Known-issues/missing-features)
 
@@ -119,7 +120,7 @@ Is every symmetric matrix invertible?
 
 ## Documentation
 
-### Main commands
+### Main commands from Python
 
 #### The Category Class
 
@@ -151,7 +152,7 @@ Methods specific to the `multichoice` type (finite number of possible answers):
 - `question.single(value)` : `true` if only one answer is possible (default), `false` if more than one answer can be selected by the student.
 
 
-### Main commands in Latex (bêta)
+### Main commands from Latex
 
 It is possible to use a similar syntax within a TEX document :
 
