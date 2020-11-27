@@ -71,9 +71,10 @@ def latexfile_document(category):
     return content
     
 def import_latextomoodle():
+    # Importing a local template : idea taken from 
+    # https://stackoverflow.com/questions/6028000/how-to-read-a-static-file-from-inside-a-python-package
     import pkgutil, io
     if not os.path.isfile('latextomoodle.sty') :
         string = pkgutil.get_data("moodlexport", "templates/latextomoodle.sty").decode()
         savestr(string, 'latextomoodle.sty')
     
-# Would be nice to just get the .sty from local instead of dowloading

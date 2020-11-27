@@ -7,9 +7,9 @@
 \newcommand{\badanswer}{$\Box$~}
 
 \newcommand{\answer}[2][]{
-	\ifthenelse{\equal{#1}{0}}
-		{~\newline \noindent \badanswer #2}
+	\ifthenelse{#1 > 0}
 		{~\newline \noindent \goodanswer #2}
+		{~\newline \noindent \badanswer #2}
 }
 
 %%%%% CATEGORY
