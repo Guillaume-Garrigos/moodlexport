@@ -70,7 +70,7 @@ from moodlexport import latextomoodle
 latextomoodle('myquestion.tex','my first question')
 ```
 
-Note that if you wish to compile the `.tex` file without errors, you will need to place the Latex package `latextomoodle.sty` in the same folder. This package can be found in the latex folder of this project.
+Note that if you wish to compile the `.tex` file without errors, you will need to place the Latex package `latextomoodle.sty` in the same folder. This package can be found in `moodlexport/templates`
 
 ### Exporting many questions at once
 
@@ -128,7 +128,7 @@ Is every symmetric matrix invertible?
 
 - `category.savexml(string)` creates an XML file under the XML Moodle format, ready to import within Moodle. The name of the file is the name of the category by default. If a `string` is given, the name of the file will be `string.xml`.
 - `category.savetex(string)` creates a TEX file, containing all the questions of the category, nicely displayed. The name of the file is the name of the category by default (spaces and underscores will be replaced with `-`). If a `string` is given, the name of the file will be `string.tex`.
-- `category.savepdf(string)` creates a TEX file as above and then compiles it to generated a PDF file. It requires that you have the Latex package `latextomoodle.sty` in the same folder, or an active internet connexion so the script can download it for you.
+- `category.savepdf(string)` creates a TEX file as above and then compiles it to generated a PDF file.
 - `category.description(string)` Adds a description to the category, which will appear in Moodle.
 
 #### The Question Class
