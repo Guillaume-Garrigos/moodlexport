@@ -2,7 +2,6 @@
 from xml.dom.minidom import parseString
 from xml.sax.saxutils import unescape
 import io
-from lark import Lark, Transformer
 
 
 ####################################
