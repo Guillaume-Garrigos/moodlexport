@@ -5,9 +5,8 @@ import numpy as np  # only for np.bool ... too bad :/
 import copy
 import os
 
-from moodlexport.string_manager import dict_default_question_moodle, set_oparg, tex_parse_dollar
+from moodlexport.string_manager import dict_default_question_moodle, set_oparg
 import moodlexport.string_manager as strtools
-
 
 ####################################
 ## CLASS : CATEGORY 

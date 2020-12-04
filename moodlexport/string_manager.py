@@ -125,12 +125,44 @@ def printmk(*tuple_of_text):
 
 
 
+def replace_open_close(string, old, newopen, newclose):
+    # Given a string containing PAIRS of 'old' chains of characters
+    # replace 'old' with opening/closing chains of characters
+    oldsize = len(old)
+    target_idx = [idx for idx in range(len(string)) if string[idx:idx+oldsize] == old]
+    if len(target_idx) % 2 == 0:
+        target_open_idx = target_idx[0::2]
+        target_close_idx = target_idx[1::2]
+        diff = 0 # controls the difference in size bewtween old and new strings
+        gap_open = len(newopen) - oldsize
+        for idx in target_open_idx:
+            string = string[:idx+diff] + newopen + string[idx+oldsize+diff:]
+            diff = gap_open + diff
+        diff = gap_open # we reset but not to zero since there is an already replaced "open" character before the first "close" one
+        gap_close = len(newclose) - oldsize + gap_open # every time we move forward we accumulate a shit from both "open" and "close" characters
+        for idx in target_close_idx:
+            string = string[:idx+diff] + newclose + string[idx+oldsize+diff:]
+            diff = gap_close + diff
+    else:
+        raise ValueError("I have to replace '"+old+"' with *pairs* of characters but I see "+str(len(target_idx))+" of them which is an odd number")
+    return string
+
+def tex_parse_dollar(latex):
+    # Transform a string containing latex expressions to make it compatible with most
+    # web-based applications which prefer \(...\) or \[...\] syntax.
+    latex = replace_open_close(latex, '$$', '\\[', '\\]')
+    latex = replace_open_close(latex, '$', '\\(', '\\)')
+    return latex
 
 
-
-
+"""
+This was INDECENTLY SLOW. Like 1 full second to convert an empty string?????
+I couldn't make any parser to work properly. In the end I hard coded it myself.
+It is quite fast now (10000 calls/second), and more robust (allows for newlines etc).
 
 # Taken from https://gist.github.com/erezsh/1f834f7d203cb1ac89b5b3aa877fa634
+
+
 class T(Transformer):
     def mathmode_offset(self, children):
         return '\\[' + ''.join(children[1:-1]) + '\\]'
@@ -165,3 +197,5 @@ def test_tex_parse_dollar():
     }
     for key in TEST_BAG:
         assert tex_parse_dollar(key) == TEST_BAG[key], key+" should return "+TEST_BAG[key]
+        
+"""
