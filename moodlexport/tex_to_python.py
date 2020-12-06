@@ -63,13 +63,13 @@ def latextopython(file_name):
     # converts a latex file into a list of Category
     with open(extension_checker(file_name,'tex'), 'r', encoding='utf-8') as file:
         latex = file.read()
-    # First we clean the file from superfluous things, or operate conversions from latex to html
+    # we clean the file from superfluous things, or operate conversions from latex to html
     #question.text(cleanstr(text, raw=True)) # if we want to have more fancy text in moodle like with <p> it must be done here..
     latex = strtools.convert_images_to_html(latex)
     latex = latex.replace('\t','')
     latex = latex.replace('\n\n','<br/>')
     latex = latex.replace('\n','')
-    # Second we parse the text to extract all the information into our python structures
+    # we parse the text to extract all the information into our python structures
     soup = TexSoup(latex)
     category_list = [] # The list of objects
     category_latex_list = list(soup.find_all('category')) # the list of latex-soup
