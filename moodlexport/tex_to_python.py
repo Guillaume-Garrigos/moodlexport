@@ -2,6 +2,7 @@
 
 from moodlexport.python_to_moodle import Category, Question
 from moodlexport.string_manager import isfield, cleanstr
+import moodlexport.string_manager as strtools
 
 from TexSoup import TexSoup
 from TexSoup.data import TexNode
@@ -35,10 +36,7 @@ def read_latex_question(latex_question):
                     getattr(question, field)(value)
             else: # annoying, certainly valid latex, most RISKY part of the code
                 text = text + str(content)
-    #question.text(cleanstr(text, raw=True)) # if we want to have more fancy text in moodle like with <p> it must be done here..
-    text = text.replace('\t','')
-    text = text.replace('\n','<br/>')
-    question.text(text) # on enlève juste les tabs, on met les /n en <br/>
+    question.text(text) 
     return question
 
 def read_latex_category(category_latex):
@@ -65,6 +63,13 @@ def latextopython(file_name):
     # converts a latex file into a list of Category
     with open(extension_checker(file_name,'tex'), 'r', encoding='utf-8') as file:
         latex = file.read()
+    # First we clean the file from superfluous things, or operate conversions from latex to html
+    #question.text(cleanstr(text, raw=True)) # if we want to have more fancy text in moodle like with <p> it must be done here..
+    latex = strtools.convert_images_to_html(latex)
+    latex = latex.replace('\t','')
+    latex = latex.replace('\n\n','<br/>')
+    latex = latex.replace('\n','')
+    # Second we parse the text to extract all the information into our python structures
     soup = TexSoup(latex)
     category_list = [] # The list of objects
     category_latex_list = list(soup.find_all('category')) # the list of latex-soup

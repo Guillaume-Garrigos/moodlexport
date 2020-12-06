@@ -4,7 +4,7 @@
 
 from .python_to_moodle import Category, Question
 from .tex_to_python import latextopython, latextomoodle
-from .string_manager import printmk
+from .string_manager import printmk, includegraphics
 
 
 

@@ -80,7 +80,7 @@ class Category():
         category_xml = xmltodict.unparse(self.dict, pretty=True)
         strtools.savestr(unescape(category_xml), file_name + ".xml")
         
-    def save(self, file_name=None): #deprecated
+    def save(self, file_name=None): #deprecated?
         self.savexml(file_name)
     
     def savetex(self, file_name=None):
@@ -90,13 +90,14 @@ class Category():
         if file_name is None:
             file_name = self.get_name()
         string = moodlexport.python_to_latex.latexfile_document(self)
-        string = string.replace('<br/>','\n') #renders better in Latex
+        string = strtools.html_to_latex(string) # we clean the file from all the html tags
         strtools.savestr(string, file_name.replace(' ','-').replace('_','-') + ".tex")
        
     def savepdf(self, file_name=None):
         """ Save a category under the format PDF """
         if file_name is None:
             file_name = self.get_name()
+        file_name = file_name.replace(' ','-').replace('_','-')
         self.savetex(file_name)
         import moodlexport.python_to_latex
         moodlexport.python_to_latex.import_latextomoodle()
