@@ -28,15 +28,17 @@ def read_latex_question(latex_question):
             if isfield(field): # is it a field defined in DICT_DEFAULT_QUESTION_MOODLE ?
                 if field == 'answer': # cas un peu compliqué
                     if len(content.args) == 1: # pas d'option donc faux par défaut
-                        question.answer(content.args[0].value, False)
+                        text = strtools.latex_to_html_cleaner(content.args[0].value)
+                        question.answer(text, False)
                     elif len(content.args) == 2: # optional value for grade percentage
-                        question.answer(content.args[1].value, content.args[0].value)
+                        text = strtools.latex_to_html_cleaner(content.args[1].value)
+                        question.answer(text, content.args[0].value)
                 else: # general field, easy to manage
                     value = content.string # a string containing the value of the said option
                     getattr(question, field)(value)
             else: # annoying, certainly valid latex, most RISKY part of the code
                 text = text + str(content)
-    question.text(text) 
+    question.text(strtools.latex_to_html_cleaner(text))
     return question
 
 def read_latex_category(category_latex):
@@ -53,7 +55,7 @@ def read_latex_category(category_latex):
             if field == 'name': # not is for some dark reason. same content, but not identity
                 category.name(content.string)
             elif field == 'description':
-                category.description(content.string)
+                category.description(strtools.latex_to_html_cleaner(content.string))
             elif field == 'question':
                 question = read_latex_question(content)
                 question.addto(category)
@@ -65,10 +67,6 @@ def latextopython(file_name):
         latex = file.read()
     # we clean the file from superfluous things, or operate conversions from latex to html
     #question.text(cleanstr(text, raw=True)) # if we want to have more fancy text in moodle like with <p> it must be done here..
-    latex = strtools.convert_images_to_html(latex)
-    latex = latex.replace('\t','')
-    latex = latex.replace('\n\n','<br/>')
-    latex = latex.replace('\n','')
     # we parse the text to extract all the information into our python structures
     soup = TexSoup(latex)
     category_list = [] # The list of objects

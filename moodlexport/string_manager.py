@@ -346,8 +346,12 @@ def convert_images_to_html(latex):
     output = output + includegraphics_latex_to_html(string_image, style='inline') + latex[imgclose[nb_images-1]+1:]  
     return output
 
-
-
+def latex_to_html_cleaner(latex):
+    latex = convert_images_to_html(latex)
+    latex = latex.replace('\t','')
+    latex = latex.replace('\n\n','<br/>')
+    latex = latex.replace('\n','')
+    return latex
 
 
 
