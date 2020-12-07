@@ -32,6 +32,7 @@ Some internal links within this documentation:
 - Supports Unicode within python and latex : éàê ...
 - Supports Latex syntax, whether you write from latex or python, in way that Moodle understands. Supports inline latex with `$e^x$`, `\(e^x\)`, and equation with `$$ f(x) = \sum_i x_i^2 $$, \begin{equation*}...\end{equation*}, \begin{cases}` etc
 - Supports export to Moodle via a XML MOODLE file, but also to .tex and .pdf files (which allow more easily to see what you are doing)
+- Supports inserting images
 
 ## Quick start
 
@@ -151,6 +152,24 @@ Methods specific to the `multichoice` type (finite number of possible answers):
     - as a percentage (integer between 0 and 100), which represents the fraction of the grade attributed to the answer. This is typically used for questions with more than 2 answers. A unique true answer has 100, a wrong answer has 0 (default)
 - `question.single(value)` : `true` if only one answer is possible (default), `false` if more than one answer can be selected by the student.
 
+#### Misc.
+
+Inserting an image: to do so, use the `includegraphics` function:
+
+```
+from moodlexport import includegraphics
+
+text = 'here is a cool image:' + includegraphics("./some_folder/my_image.png", width=256, height=128)
+
+question = Question()
+question.text(text)
+```
+
+Options:
+- `width` and `height` (integer). Modify the size of the image, in pixels. If no argument is passed, the image is displayed in its original shape.
+- `style` (string). Two possible values:
+    * `"centered"` (default). The image is displayed in a new line and centered.
+    * `"inline"`. The image is displayed next to the text.
 
 ### Main commands from Latex
 
@@ -162,8 +181,12 @@ It is possible to use a similar syntax within a TEX document :
     - `\description{string}` sets the description of a category
     - `\grade{float}` sets the grade of a question
     - `\answer[value]{string}` adds an answer to a multichoice question
+- Inserting images is done with the command `\includegraphics[width=256px, height=128px]{./some_folder/my_image.png}` from the package `graphicx`
+    * for the options `width` and `height` the only supported unit is `px`
+    * the option `scale` is not supported
+    * if the command `\includegraphics` is called within an environment `\begin{center} ... \end{center}`, the image will be centered as well in Moodle. If not it will be displayed inline.
 
-The corresponding latex package can be found in the `latex` folder.
+The corresponding latex package can be found in `moodlexport/moodlexport/templates`, should be [https://github.com/Guillaume-Garrigos/moodlexport/tree/master/moodlexport/templates](here).
 
 To convert a .tex file into an .xml, use
 
@@ -185,6 +208,8 @@ list_of_categories = latextopython('file_name.tex') # it outputs a list of Categ
 
 ## Changelog
 
+- v.0.0.22
+    - Add a new feature to insert images.
 - v.0.0.21
     - The parser used to handle `$`'s was wayyy to slow. This is corrected now.
 - v.0.0.20
