@@ -156,7 +156,7 @@ Methods specific to the `multichoice` type (finite number of possible answers):
 
 Inserting an image: to do so, use the `includegraphics` function:
 
-```
+```python
 from moodlexport import includegraphics
 
 text = 'here is a cool image:' + includegraphics("./some_folder/my_image.png", width=256, height=128)
@@ -190,16 +190,17 @@ The corresponding latex package can be found in `moodlexport/moodlexport/templat
 
 To convert a .tex file into an .xml, use
 
-```
+```python
 from moodlexport import latextomoodle
 latextomoodle('file_name.tex')
 ```
 
 You can also import the contents of your .tex file directly into python (you might want to do some modifications before exporting to Moodle). You .tex file must contain one or more categories of questions. To do so, use : 
 
-```
+```python
 from moodlexport import latextopython
-list_of_categories = latextopython('file_name.tex') # it outputs a list of Category objects, even if you have only one category.
+# it outputs a list of Category objects, even if you have only one category.
+list_of_categories = latextopython('file_name.tex') 
 ```
 
 
