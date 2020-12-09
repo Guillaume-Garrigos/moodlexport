@@ -210,7 +210,7 @@ list_of_categories = latextopython('file_name.tex')
 ## Changelog
 
 - v.0.0.23
-    - Forgot to load some modules. [Merge](https://github.com/Guillaume-Garrigos/moodlexport/pull/4) from [@gregnordin]
+    - Forgot to load some modules. [Merge](https://github.com/Guillaume-Garrigos/moodlexport/pull/4) from [@gregnordin](https://github.com/gregnordin)
 - v.0.0.22
     - Add a new feature to insert images.
 - v.0.0.21
