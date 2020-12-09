@@ -22,7 +22,9 @@ setuptools.setup(
     python_requires='>=3.7',
     install_requires=[
     'texsoup == 0.2.1',
-    'xmltodict >= 0.12.0'
+    'xmltodict >= 0.12.0',
+    'numpy >= 1.18.0',
+    'beautifulsoup4 >= 4.8.0'
     ],
     include_package_data=True,
 )
