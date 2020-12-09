@@ -2,7 +2,6 @@
 from moodlexport.python_to_moodle import Category, Question
 from moodlexport.string_manager import latex_protect, alias, savestr
 
-import requests
 import os.path
 
 LATEX_PACKAGE_URL = "https://raw.githubusercontent.com/Guillaume-Garrigos/moodlexport/master/latex/latextomoodle.sty"
