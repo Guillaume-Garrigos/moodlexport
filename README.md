@@ -209,12 +209,10 @@ list_of_categories = latextopython('file_name.tex')
 
 ## Changelog
 
-- v.0.0.23
-    - Forgot to load some modules. [https://github.com/Guillaume-Garrigos/moodlexport/pull/4](Merge) from [@gregnordin]
-- v.0.0.22
-    - Add a new feature to insert images.
-- v.0.0.21
-    - The parser used to handle `$`'s was wayyy to slow. This is corrected now.
+- v.0.0.24 Solves issue #5
+- v.0.0.23 Forgot to load some modules. [https://github.com/Guillaume-Garrigos/moodlexport/pull/4](Merge) from [@gregnordin]
+- v.0.0.22 Add a new feature to insert images.
+- v.0.0.21 The parser used to handle `$`'s was wayyy to slow. This is corrected now.
 - v.0.0.20
     - I realized that depending on Moodle's version, or depending on how the administrator implements it, inline math like `$e^x$` can not be recognized. Moodle's doc [says](https://docs.moodle.org/3x/fr/Utilisation_de_la_notation_TeX) it is not supported. So, now, every inline math `$e^x$` is converted into `\(e^x\)` just before exporting the data into XML. This allows the user to painlessly type latex as usual with `$`'s.
     - Now TEX files are generated without spaces or `_` in the filename. Because latexmk wasn't happy when generating pdfs.

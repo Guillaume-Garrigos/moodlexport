@@ -109,7 +109,19 @@ def html(string):
     if string is "":
         return string
     else:
-        return "<![CDATA[<p>\(\)" + tex_parse_dollar(latex_protect(string)) + "</p>]]>"  # \(\) is a hack to activate latex dans Moodle. Not always needed, not always working. Still a mystery to me.
+        content = tex_parse_dollar(latex_protect(string))
+        if latex_is_here(content):
+            content = "\(\)" + content # \(\) is a hack to activate latex dans Moodle. Not always needed, not always working. Still a mystery to me.
+        return "<![CDATA[<p>" + content + "</p>]]>"  
+    
+def latex_is_here(string):
+    # returns a boolean saying wether the string contains common latex chain of characters
+    # those are either \(, \), \[, \], $$, $, \begin{
+    # it seems that if/then is the fastest way to check it : https://stackoverflow.com/questions/5188792/how-to-check-a-string-for-specific-characters
+    if ('\\(' in string) or ('\\[' in string) or ('\\begin{' in string) or ('$$' in string) or ('$' in string):
+        return True
+    else:
+        return False
 
 def set_oparg(variable, default_value): #optional argument manager
     if variable is None:
