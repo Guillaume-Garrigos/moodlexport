@@ -167,8 +167,6 @@ class Question():
                 self.dict["answer"].append(answer.dict)
                 if answer.structure['relativegrade'] != 0 and answer.structure['relativegrade'] != 100: # we have multiple solutions
                     self._set('single', 'false')
-                elif answer.structure['relativegrade'] == 100: # we have a unique solution
-                    self._set('single', 'true')
                 if self.cumulated_grade_correct() != 100:
                     raise ValueError('In a multichoice Question, the sum of the relative grades/percentages of the correct answers must be exactly 100, but here is '+str(self.cumulated_grade_correct()))
                 
