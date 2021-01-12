@@ -8,6 +8,12 @@ import os
 from moodlexport.string_manager import dict_default_question_moodle, set_oparg
 import moodlexport.string_manager as strtools
 
+accepted_values = [x/10 for x in range(1,11)] + [x/6 for x in range(1,6)] + [1/4,3/4,1/7,1/8,1/9]
+accepted_values = [-x for x in accepted_values]+accepted_values+[0.0]
+accepted_values = [float(f'%.{6}e'%(100*x)) for x in accepted_values] #this list contains all the grade percentages that moodle accepts
+accepted_values.sort()
+
+
 ####################################
 ## CLASS : CATEGORY 
 ####################################
@@ -146,29 +152,31 @@ class Question():
     
     def cumulated_grade_correct(self): # sums the fractions of grade of correct answers
         if self.structure['answer']['isset']:
-            s = 0
+            s = 0.0
             for answer in self.structure['answer']['list']:
                 if answer.structure['relativegrade'] > 0:
                     s += answer.structure['relativegrade']
             return s
         else:
-            return 100
+            return 100.0
         
     def addto(self, category):
         self.compilation()
         category.structure['question'].append(self)
         
     def compilation(self):
-        # aussi vérifier que la somme des answer vaut 100 et passer l'option du multiquestion si necessaire?
+
         if self.has_answer(): # if there are answers
             self.dict["answer"] = [] # instead of "" so far. Also reboots the dict if we did changes
             for answer in self.structure["answer"]["list"]:
                 answer.compilation() # refresh the Answer.dict after eventual changes on Answer.structure
                 self.dict["answer"].append(answer.dict)
-                if answer.structure['relativegrade'] != 0 and answer.structure['relativegrade'] != 100: # we have multiple solutions
+                if answer.structure['relativegrade'] not in accepted_values:
+                	raise ValueError('The grade percentage of '+ self.dict.answer['relativegrade'] +' is not accepted by moodle. Accepted values are'+ str(accepted_values))
+                if answer.structure['relativegrade'] != 0.0 and answer.structure['relativegrade'] != 100.0: # we have multiple solutions
                     self._set('single', 'false')
-                if self.cumulated_grade_correct() != 100:
-                    raise ValueError('In a multichoice Question, the sum of the relative grades/percentages of the correct answers must be exactly 100, but here is '+str(self.cumulated_grade_correct()))
+                if float(f'%.{5}e'%(self.cumulated_grade_correct())) != 100.0: #check if sum of grades of correct answers is 100 with 5 digit accuracy
+                    raise ValueError('In a multichoice Question, the sum of the relative grades/percentages of the correct answers must be 100 within a tolerance of 0.01, but here is '+str(self.cumulated_grade_correct()))
                 
     
     def save(self, optional_name="Default-category-name"): 
@@ -212,7 +220,7 @@ class Answer():
     """ 
         Object collecting an answer to a multichoice Question
     """
-    def __init__(self, answer_text="This is a default answer", grade=0):
+    def __init__(self, answer_text="This is a default answer", grade=0.0):
         grade = bool_to_grade(grade) #defined below
         self.structure = {
             'text' : answer_text,
@@ -225,7 +233,7 @@ class Answer():
     def text(self, text):
         self.structure['text'] = text
         
-    def relativegrade(self, grade):# must be a number (int?) between -100 and 100, decribing how much it is worth. Or a bool.
+    def relativegrade(self, grade):# must be a number contained in the list 'accepted_values', defined at the top of this file, or a bool.
         grade = bool_to_grade(grade)
         self.structure['relativegrade'] = bool_to_grade(grade) 
         
@@ -233,10 +241,10 @@ class Answer():
         self.structure['feedback'] = text
     
     def istrue(self): # Says that this answer is THE good one
-        self.relativegrade(100)
+        self.relativegrade(100.0)
         
     def isfalse(self): # Says that this answer is not good
-        self.relativegrade(0)
+        self.relativegrade(0.0)
 
 # GET FIELDS         
     def get_text(self):
@@ -267,8 +275,8 @@ class Answer():
         else:
             question.structure["answer"]["isset"] = True
             question.structure["answer"]["list"].append(self)
-            if question.cumulated_grade_correct() > 100:
-                raise ValueError("In this Question the sum of relative grades/percentages of the correct answers appears to be >100.")
+            if question.cumulated_grade_correct() > 100.0:
+                raise ValueError("In this Question the sum of relative grades/percentages of the correct answers appears to be >100.0")
 
 # NEEDED FUNCTIONS
 def bool_to_grade(grade):
@@ -276,13 +284,13 @@ def bool_to_grade(grade):
     # grade can be either a int/float (percentage of the grade) or a bool (is the answer true or not)
     if isinstance(grade, bool) or isinstance(grade, np.bool):
         if grade:
-            return 100
+            return 100.0
         else:
-            return 0
-    else: # it is already an integer (we hope so)
-        grade = int(grade)
-        if grade > 100 or grade < -100:
-            raise ValueError('For an answer, the (relative) grade must be a number between -100 and 100, representing the percentage of points gained/lost by marking it as correct.')
+            return 0.0
+    else: 
+        grade = float(grade)
+        if grade not in accepted_values:
+            raise ValueError('For an answer, the value ' + str(grade) + ' for a (relative) grade is not accepted by moodle. Accepted values are '+ str(accepted_values))
         else:
             return grade
 
