@@ -7,10 +7,11 @@
 \newcommand{\badanswer}{$\Box$~}
 
 \newcommand{\answer}[2][]{
-	\ifthenelse{#1 > 0}
-		{~\newline \noindent \goodanswer #2}
-		{~\newline \noindent \badanswer #2}
+  \ifthenelse{\lengthtest{#1 pt > 0.0pt}}
+    {~\newline \noindent \goodanswer #2 ~\hfill~(${#1} \%$)~}
+    {~\newline \noindent \badanswer #2  ~\hfill~(${#1} \%$)~}
 }
+
 
 %%%%% CATEGORY
 \newenvironment{category}[1][]{ \newpage \section{Catégorie: #1}   }{\bigskip}
