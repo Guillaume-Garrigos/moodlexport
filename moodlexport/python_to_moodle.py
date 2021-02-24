@@ -81,7 +81,7 @@ class Category():
         self.compilation()
         if file_name is None:
             file_name = self.get_name()
-        category_xml = xmltodict.unparse(self.dict, pretty=True)
+        category_xml = xmltodict.unparse(self.dict, pretty=True) # here all bools are converted to strings
         strtools.savestr(unescape(category_xml), file_name + ".xml")
         
     def save(self, file_name=None): #deprecated?
@@ -163,6 +163,18 @@ class Question():
         else:
             return 100
         
+    def should_it_be_single_choice(self):
+        # Given the grades of the answers, try to guess whether the question 
+        # should be "single choice" or "multi choice".
+        # returns a boolean
+        # the default value is True (arbitrary choice but consistent with dict_default_question_moodle)
+        if self.has_answer(): # if so we return True only if one of the grades is 100
+            istheanswer100 = [ans.get_relativegrade() == 100 for ans in self.get_answer()] # bunch of True/False
+            return sum(istheanswer100) == 1 # True iff there is only one grade set to 100
+        else:
+            return True
+        
+        
     def addto(self, category):
         self.compilation()
         category.structure['question'].append(self)
@@ -171,15 +183,22 @@ class Question():
         # aussi vérifier que la somme des answer vaut 100 et passer l'option du multiquestion si necessaire?
         if self.has_answer(): # if there are answers
             self.dict["answer"] = [] # instead of "" so far. Also reboots the dict if we did changes
-            for answer in self.structure["answer"]["list"]:
+            for answer in self.get_answer():
                 answer.compilation() # refresh the Answer.dict after eventual changes on Answer.structure
                 self.dict["answer"].append(answer.dict) # loads the answer.dict into the question.dict
-                if answer.structure['relativegrade'] != 0 and answer.structure['relativegrade'] != 100: # we have multiple solutions
-                    self._set('single', 'false')
-                elif answer.structure['relativegrade'] == 100: # we have a unique solution
-                    self._set('single', 'true')
-                if self.cumulated_grade_correct() != 100: # makes sure that the sum of grades for good answers is 100
-                    raise ValueError('In a multichoice Question, the sum of the relative grades/percentages of the correct answers must be exactly 100, but here is '+str(self.cumulated_grade_correct()))
+                
+            if not self.structure['single']['isset']: 
+                # in that case we need to guess it
+                self.single(self.should_it_be_single_choice()) # we give a bool, will be converted to string later in Category.savexml
+            else: # in that case we just check nothing weird happens
+                if self.get_single() and not self.should_it_be_single_choice():
+                    raise ValueError("You have set the 'single' parameter to 'True', meaning that only one answer can be chosen. But it seems that you have more than one valid answers. Please make sure that this is what you want.")
+                if not self.get_single() and self.should_it_be_single_choice():
+                    import logging
+                    logging.warning("You have set the 'single' parameter to 'False', meaning that multiple answers can be chosen. But it seems that there is only one valid answer. Please make sure that this is what you want.")
+                    
+            if self.cumulated_grade_correct() != 100: # makes sure that the sum of grades for good answers is 100
+                raise ValueError('In a multichoice Question, the sum of the relative grades/percentages of the correct answers must be exactly 100, but here is '+str(self.cumulated_grade_correct()))
                 
     
     def save(self, optional_name="Default-category-name"): 
