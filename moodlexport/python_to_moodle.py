@@ -15,6 +15,10 @@ import moodlexport.string_manager as strtools
 class Category():
     """ 
         Object collecting Questions under the form of a category, ready to export to Moodle.
+        Object.dict is a dictionary containing the ifnormation which will be converted into XML
+        Object.structure is an other dict, which contains the same information, but more (and we don't want
+            this "more" to appear in the XML. For instance text and latex is not encoded/escaped the same 
+            in .dict and .structure. For sure we could do better ...
         Methods:
         _set(name, description) : e.g. _set("my_category", "list of questions about ... ")
         append(question) : adds a Question to the Category
@@ -121,20 +125,25 @@ class Question():
         self.structure = copy.deepcopy(dict_default_question_moodle()) # Need deep otherwise mess
         self.dict = {} # The proper question in a dictionary ready to turn into xml
         for field in self.structure:
-            self._set(field, self.structure[field]['default'])
+            self._set(field, None) # None will trigger the default value
         self._set('@type', question_type)
                
     def _set(self, field, value=None):
         """ Assigns a value to a field of a Question. It is stored in both .structure and .dict """
-        value = set_oparg(value, "")
+        #value = set_oparg(value, "")
         field_structure = self.structure[field]
+        if value is None: # this happens when creating a question with an empty dict
+            value = self.structure[field]['default']
+            field_structure['isset'] = False
+        else:
+            field_structure['isset'] = True
+        # now 'value' has the good ... value
         field_structure['value'] = value
-        field_structure['isset'] = (value != self.structure[field]['default'])
         if 'attribute' not in field_structure: # no attributes, just stupid value to assign 
             self.dict[field] = value
-        else: # we have attributes which means the field contains a <text> element
+        else: # we have "attributes" which means the field contains a "<text>" element
             if 'html' in field_structure['attribute'].values(): # the value is a string to be turned...
-                value = strtools.html(value)                             # ... into a html string (tackles latex, <p>'s and stuff)
+                value = strtools.html(value)                    # ... into a html string (tackles latex, <p>'s and stuff)
             # now we just fill the field with a text element, and its attributes
             self.dict[field] = {**field_structure['attribute'], **{"text": value}} # concatenation needs Python >= 3.5
     
@@ -164,12 +173,12 @@ class Question():
             self.dict["answer"] = [] # instead of "" so far. Also reboots the dict if we did changes
             for answer in self.structure["answer"]["list"]:
                 answer.compilation() # refresh the Answer.dict after eventual changes on Answer.structure
-                self.dict["answer"].append(answer.dict)
+                self.dict["answer"].append(answer.dict) # loads the answer.dict into the question.dict
                 if answer.structure['relativegrade'] != 0 and answer.structure['relativegrade'] != 100: # we have multiple solutions
                     self._set('single', 'false')
                 elif answer.structure['relativegrade'] == 100: # we have a unique solution
                     self._set('single', 'true')
-                if self.cumulated_grade_correct() != 100:
+                if self.cumulated_grade_correct() != 100: # makes sure that the sum of grades for good answers is 100
                     raise ValueError('In a multichoice Question, the sum of the relative grades/percentages of the correct answers must be exactly 100, but here is '+str(self.cumulated_grade_correct()))
                 
     
