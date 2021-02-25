@@ -6,10 +6,10 @@
 \newcommand{\goodanswer}{$\XBox$~}
 \newcommand{\badanswer}{$\Box$~}
 
-\newcommand{\answer}[2][]{
-	\ifthenelse{#1 > 0}
-		{~\newline \noindent \goodanswer #2}
-		{~\newline \noindent \badanswer #2}
+\newcommand{\answer}[2][]{%
+  \ifthenelse{\lengthtest{#1 pt > 0.0pt}}
+    {\leavevmode\newline \noindent \goodanswer #2 \hfill (${#1} \%$)}
+    {\leavevmode\newline \noindent \badanswer #2 \hfill (${#1} \%$)}
 }
 
 %%%%% CATEGORY
