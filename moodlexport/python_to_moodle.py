@@ -363,17 +363,17 @@ def gather_questions(name=None):
 def no_category_name_warning():
     logging.warning("Beware, you are exporting some question(s) without specifying a name for the category gathering them. If you want to avoid a default name, you can simply pass an argument to this function, something like : name='the name of my category' ")
 
-def exportxml(name=None):
+def savexml(name=None):
     if name is None:
         no_category_name_warning()
     gather_questions(name).savexml()
 
-def exporttex(name=None):
+def savetex(name=None):
     if name is None:
         no_category_name_warning()
     gather_questions(name).savetex()
 
-def exportpdf(name=None):
+def savepdf(name=None):
     if name is None:
         no_category_name_warning()
     gather_questions(name).savepdf()
