@@ -153,15 +153,15 @@ class Question():
     def has_answer(self):
         return (self.get_type() == "multichoice") and self.structure['answer']['isset']
     
-    def cumulated_grade_correct(self): # sums the fractions of grade of correct answers
+    def cumulated_grade_correct(self): # sums the grades of *correct* answers
         if self.structure['answer']['isset']:
-            s = 0
+            s = 0.0
             for answer in self.structure['answer']['list']:
                 if answer.structure['relativegrade'] > 0:
                     s += answer.structure['relativegrade']
             return s
         else:
-            return 100
+            return 100.0
         
     def should_it_be_single_choice(self):
         # Given the grades of the answers, try to guess whether the question 
@@ -169,7 +169,7 @@ class Question():
         # returns a boolean
         # the default value is True (arbitrary choice but consistent with dict_default_question_moodle)
         if self.has_answer(): # if so we return True only if one of the grades is 100
-            istheanswer100 = [ans.get_relativegrade() == 100 for ans in self.get_answer()] # bunch of True/False
+            istheanswer100 = [int(ans.get_relativegrade()) == 100 for ans in self.get_answer()] # bunch of True/False
             return sum(istheanswer100) == 1 # True iff there is only one grade set to 100
         else:
             return True
@@ -180,7 +180,13 @@ class Question():
         category.structure['question'].append(self)
         
     def compilation(self):
-        # aussi vérifier que la somme des answer vaut 100 et passer l'option du multiquestion si necessaire?
+        """ This is where we put the Answers in the Question
+            1. Collects all the Answers if any
+            2. Check that the Answer's grades are okay
+            3. Check that the 'single' parameter is set and compatible with the grades
+            4. Check that the sum of positive grades is 100 (tolerance: 1e-3)    
+        """
+        tolerance = 1e-3
         if self.has_answer(): # if there are answers
             self.dict["answer"] = [] # instead of "" so far. Also reboots the dict if we did changes
             for answer in self.get_answer():
@@ -195,10 +201,10 @@ class Question():
                     raise ValueError("You have set the 'single' parameter to 'True', meaning that only one answer can be chosen. But it seems that you have more than one valid answers. Please make sure that this is what you want.")
                 if not self.get_single() and self.should_it_be_single_choice():
                     import logging
-                    logging.warning("You have set the 'single' parameter to 'False', meaning that multiple answers can be chosen. But it seems that there is only one valid answer. Please make sure that this is what you want.")
+                    logging.warning("You have set the 'single' parameter to 'False' for this Question, meaning that multiple answers can be chosen. But it seems that there is only one valid answer. Please make sure that this is what you want.")
                     
-            if self.cumulated_grade_correct() != 100: # makes sure that the sum of grades for good answers is 100
-                raise ValueError('In a multichoice Question, the sum of the relative grades/percentages of the correct answers must be exactly 100, but here is '+str(self.cumulated_grade_correct()))
+            if abs(self.cumulated_grade_correct() - 100) > tolerance: # makes sure that the sum of grades for good answers is roughly 100
+                raise ValueError('In a multichoice Question, the sum of the relative grades/percentages of the correct answers must be 100 (within a tolerance of '+str(tolerance)+'), but it apprears to be '+str(self.cumulated_grade_correct()))
                 
     
     def save(self, optional_name="Default-category-name"): 
@@ -213,12 +219,21 @@ class Question():
         ans.addto(self)
         #self.structure['answer']['value'].append({'text' : answer_text, 'grade': ans.dict['@fraction'] })
     
-    def get_answer(self, number=None): # give access
+    def get_answer(self, number=None):
         if self.has_answer():
             if number is None:
                 return self.structure['answer']['list']
             else:
                 return self.structure['answer']['list'][number]
+        else:
+            raise ValueError('This Question has no Answer')
+            
+    def get_relativegrade(self, number=None): # collects the grades of the Answers
+        if self.has_answer():
+            if number is None:
+                return [answer.get_relativegrade() for answer in self.get_answer()]
+            else:
+                return self.get_answer(number).get_relativegrade()
         else:
             raise ValueError('This Question has no Answer')
 
@@ -242,11 +257,10 @@ class Answer():
     """ 
         Object collecting an answer to a multichoice Question
     """
-    def __init__(self, answer_text="This is a default answer", grade=0):
-        grade = bool_to_grade(grade) #defined below
+    def __init__(self, answer_text="This is a default answer", grade=0.0):
         self.structure = {
             'text' : answer_text,
-            'relativegrade' : grade,
+            'relativegrade' : strtools.filter_grade(grade),
             'feedback' : "" 
         }
         self.dict = {}
@@ -255,9 +269,8 @@ class Answer():
     def text(self, text):
         self.structure['text'] = text
         
-    def relativegrade(self, grade):# must be a number (int?) between -100 and 100, decribing how much it is worth. Or a bool.
-        grade = bool_to_grade(grade)
-        self.structure['relativegrade'] = bool_to_grade(grade) 
+    def relativegrade(self, grade): # must be a number contained in the list 'ACCEPTED_GRADES' in string_manger.py, or a bool (see the doc).
+        self.structure['relativegrade'] = strtools.filter_grade(grade) 
         
     def feedback(self, text):
         self.structure['feedback'] = text
@@ -279,7 +292,7 @@ class Answer():
         return self.structure['feedback']
     
 # OTHER METHODS
-    def compilation(self): # prepares the answer by creating a dict
+    def compilation(self): # prepares the Answer by creating a dict
         self.dict = {
             '@fraction': self.structure['relativegrade'],
             '@format': 'html',
@@ -300,21 +313,6 @@ class Answer():
             if question.cumulated_grade_correct() > 100:
                 raise ValueError("In this Question the sum of relative grades/percentages of the correct answers appears to be >100.")
 
-# NEEDED FUNCTIONS
-def bool_to_grade(grade):
-    # we manage the default value of grade
-    # grade can be either a int/float (percentage of the grade) or a bool (is the answer true or not)
-    if isinstance(grade, bool) or isinstance(grade, np.bool):
-        if grade:
-            return 100
-        else:
-            return 0
-    else: # it is already an integer (we hope so)
-        grade = int(grade)
-        if grade > 100 or grade < -100:
-            raise ValueError('For an answer, the (relative) grade must be a number between -100 and 100, representing the percentage of points gained/lost by marking it as correct.')
-        else:
-            return grade
 
 ####################################
 ## END

@@ -5,6 +5,7 @@ import io
 import base64
 from bs4 import BeautifulSoup
 from TexSoup import TexSoup
+import numpy as np
 
 
 ####################################
@@ -69,7 +70,10 @@ UNESCAPE_LATEX = {
     '\n'   : '\\n', 
     '\r'   : '\\r', 
     '\t'   : '\\t' 
-} 
+}
+
+# The list of all legal grades accepted by Moodle
+ACCEPTED_GRADES = [-100.0, -90.0, -83.33333, -80.0, -75.0, -70.0, -66.66667, -60.0, -50.0, -50.0, -40.0, -33.33333, -30.0, -25.0, -20.0, -16.66667, -14.28571, -12.5, -11.11111, -10.0, 0.0, 10.0, 11.11111, 12.5, 14.28571, 16.66667, 20.0, 25.0, 30.0, 33.33333, 40.0, 50.0, 50.0, 60.0, 66.66667, 70.0, 75.0, 80.0, 83.33333, 90.0, 100.0]
 
 
 ####################################
@@ -163,6 +167,38 @@ def tex_parse_dollar(latex):
     latex = replace_open_close(latex, '$$', '\\[', '\\]')
     latex = replace_open_close(latex, '$', '\\(', '\\)')
     return latex
+
+#-----------------------------------------------------
+# Numbers and grades
+#-----------------------------------------------------
+
+def filter_grade(grade):
+    """ DEPENDENCY : numpy
+    we manage the default value of grade.
+    grade can be either a bool (the answer is true (100) or not (0)),
+    or any int/float value in [-100,100] close enough to Moodle's accepted_values,
+    or any float value in [-1,1] such that 100*value is close to Moodle's accepted_values.
+    Here 'close enough' within [-100,100] is arbitrarily set to mean 'up to rounding'
+    """
+    # First we deal with the boolean case
+    if isinstance(grade, bool) or isinstance(grade, np.bool):
+        if grade:
+            return 100.0
+        else:
+            return 0.0
+    # now we deal with the numeric case
+    else:
+        grade = float(grade)
+        if -1 <= grade and grade <= 1 and abs(grade) > 1/100: # we assume a [-1,1] syntax, except 0 or weird super small values
+            return filter_grade(100*grade)
+        else: # we expect a [-100,100] syntax
+            # we check if value is close to an accepted value
+            for candidate_value in ACCEPTED_GRADES:
+                if np.floor(candidate_value) <= grade <= np.ceil(candidate_value):
+                    return candidate_value
+            # no match has been found
+            raise ValueError('For an answer, the value ' + str(grade) + ' for a (relative) grade is not accepted by Moodle. Accepted values are '+ str(ACCEPTED_VALUES))
+
 
 
 """
