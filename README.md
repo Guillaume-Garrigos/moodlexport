@@ -209,6 +209,7 @@ list_of_categories = latextopython('file_name.tex')
 
 ## Changelog
 
+- v.0.0.25 Solves two bugs for multichoice questions from issue #6, with code from [@Stivanification](https://github.com/Stivanification)
 - v.0.0.24 Solves issue #5
 - v.0.0.23 Forgot to load some modules. [https://github.com/Guillaume-Garrigos/moodlexport/pull/4](Merge) from [@gregnordin](https://github.com/gregnordin)
 - v.0.0.22 Add a new feature to insert images.
