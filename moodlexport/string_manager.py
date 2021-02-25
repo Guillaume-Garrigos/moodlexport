@@ -1,4 +1,4 @@
-
+import datetime
 from xml.dom.minidom import parseString
 from xml.sax.saxutils import unescape
 import io
@@ -19,7 +19,7 @@ DICT_DEFAULT_QUESTION_MOODLE = {
     '@type': {'default': "essay", 
               'alias': 'type'
              }, # can be "multichoice" for MCQs
-    "name": {'default': "Default question title", 
+    "name": {'default': "Question with no title", 
              'attribute': {'@format': 'txt'}, 
              'alias': 'title'
             },
@@ -72,6 +72,23 @@ UNESCAPE_LATEX = {
     '\t'   : '\\t' 
 }
 
+# we use that dictionary when saving files. We take care of forbidden characters in Windows.
+# Also when compiling in latex, spaces (and underscores!? it happened but idk why) can be annoying
+UNESCAPE_FILENAME = {
+    '*' : '',
+    '.' : '-',
+    '"' : '',
+    '/' : '',
+    '\\' : '',
+    '[' : '',
+    ']' : '',
+    ':' : '-',
+    ';' : '',
+    '|' : '',
+    ' ' : '-',
+    '_' : '-'    
+}
+
 # The list of all legal grades accepted by Moodle
 ACCEPTED_GRADES = [-100.0, -90.0, -83.33333, -80.0, -75.0, -70.0, -66.66667, -60.0, -50.0, -50.0, -40.0, -33.33333, -30.0, -25.0, -20.0, -16.66667, -14.28571, -12.5, -11.11111, -10.0, 0.0, 10.0, 11.11111, 12.5, 14.28571, 16.66667, 20.0, 25.0, 30.0, 33.33333, 40.0, 50.0, 50.0, 60.0, 66.66667, 70.0, 75.0, 80.0, 83.33333, 90.0, 100.0]
 
@@ -108,6 +125,9 @@ def savestr(string, filename="new.txt", raw=False):
 
 def latex_protect(string):
     return unescape(string, UNESCAPE_LATEX)
+
+def filename_protect(string): # removes forbidden/annoying characters in filenames
+    return unescape(string, UNESCAPE_FILENAME)
     
 def html(string):
     if string is "":
@@ -167,6 +187,12 @@ def tex_parse_dollar(latex):
     latex = replace_open_close(latex, '$$', '\\[', '\\]')
     latex = replace_open_close(latex, '$', '\\(', '\\)')
     return latex
+
+def clock(utc=0): # returns UTC time (can be shifted)
+    current_time = datetime.datetime.utcnow() + datetime.timedelta(hours=utc)
+    return current_time.strftime("%y%m%d %H%M%S") + " UTC"
+
+
 
 #-----------------------------------------------------
 # Numbers and grades

@@ -2,7 +2,7 @@
 #from moodlexport.tex_to_python import *
 #from moodlexport.python_to_latex import *
 
-from .python_to_moodle import Category, Question
+from .python_to_moodle import Category, Question, exportxml, exporttex, exportpdf
 from .tex_to_python import latextopython, latextomoodle
 from .string_manager import printmk, includegraphics
 

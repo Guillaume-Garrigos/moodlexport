@@ -4,6 +4,7 @@ import xmltodict
 import numpy as np  # only for np.bool ... too bad :/
 import copy
 import os
+import logging
 
 from moodlexport.string_manager import dict_default_question_moodle, set_oparg
 import moodlexport.string_manager as strtools
@@ -24,16 +25,19 @@ class Category():
         append(question) : adds a Question to the Category
         save(file_name) : save the Category into Moodle-XML
     """
-    def __init__(self, name=None):
+    def __init__(self, name=None, path=""):
         self.structure = {
             "name" : "",
             "description" : "",
             "path" : "",
             "question" : []}
-        self.name(set_oparg(name, "Default-category-name"))
+        self.name(name)
+        self.path(path)
         self.dict = {}
         
-    def name(self, string="Default-category-name"):
+    def name(self, string=None):
+        if string is None:
+            string = "Unnamed category " + strtools.clock()
         self.structure['name'] = string
         
     def description(self, string=""):
@@ -44,7 +48,9 @@ class Category():
             if string[-1] == "/":
                 self.structure['path'] = string
             else:
-                raise ValueError("The path for a Category must end with a /")
+                raise ValueError("The path for a Category must end with '/' ")
+        else:
+            self.structure['path'] = ""
                 
     def get_question(self, number=None):
         if number is None:
@@ -81,6 +87,7 @@ class Category():
         self.compilation()
         if file_name is None:
             file_name = self.get_name()
+        file_name = strtools.filename_protect(file_name)
         category_xml = xmltodict.unparse(self.dict, pretty=True) # here all bools are converted to strings
         strtools.savestr(unescape(category_xml), file_name + ".xml")
         
@@ -93,15 +100,16 @@ class Category():
         self.compilation()
         if file_name is None:
             file_name = self.get_name()
+        file_name = strtools.filename_protect(file_name)
         string = moodlexport.python_to_latex.latexfile_document(self)
         string = strtools.html_to_latex(string) # we clean the file from all the html tags
-        strtools.savestr(string, file_name.replace(' ','-').replace('_','-') + ".tex")
+        strtools.savestr(string, file_name + ".tex")
        
     def savepdf(self, file_name=None):
         """ Save a category under the format PDF """
         if file_name is None:
             file_name = self.get_name()
-        file_name = file_name.replace(' ','-').replace('_','-')
+        file_name = strtools.filename_protect(file_name)
         self.savetex(file_name)
         import moodlexport.python_to_latex
         moodlexport.python_to_latex.import_latextomoodle()
@@ -200,18 +208,35 @@ class Question():
                 if self.get_single() and not self.should_it_be_single_choice():
                     raise ValueError("You have set the 'single' parameter to 'True', meaning that only one answer can be chosen. But it seems that you have more than one valid answers. Please make sure that this is what you want.")
                 if not self.get_single() and self.should_it_be_single_choice():
-                    import logging
                     logging.warning("You have set the 'single' parameter to 'False' for this Question, meaning that multiple answers can be chosen. But it seems that there is only one valid answer. Please make sure that this is what you want.")
                     
             if abs(self.cumulated_grade_correct() - 100) > tolerance: # makes sure that the sum of grades for good answers is roughly 100
                 raise ValueError('In a multichoice Question, the sum of the relative grades/percentages of the correct answers must be 100 (within a tolerance of '+str(tolerance)+'), but it apprears to be '+str(self.cumulated_grade_correct()))
                 
     
-    def save(self, optional_name="Default-category-name"): 
+    def savexml(self, name=None):
         # saves the question without category in a single file
-        cat = Category(optional_name)
+        if name is None:
+            name = self.get_name()
+        cat = Category(name)
         self.addto(cat)
-        cat.save()
+        cat.savexml()
+    
+    def savetex(self, name=None):
+        # saves the question without category in a single file
+        if name is None:
+            name = self.get_name()
+        cat = Category(name)
+        self.addto(cat)
+        cat.savetex()
+    
+    def savepdf(self, name=None):
+        # saves the question without category in a single file
+        if name is None:
+            name = self.get_name()
+        cat = Category(name)
+        self.addto(cat)
+        cat.savepdf()
     
     def answer(self, answer_text="This is a default answer", grade=0):
         # appends an answer to the question. Calls the Answer class
@@ -315,11 +340,43 @@ class Answer():
 
 
 ####################################
-## END
+## global functionalities
 ####################################
 
+def gather_questions(name=None):
+    # Dependency : COPY
+    # Look for all the objects of the class Question ever created
+    # and gather them in a Category
+    # I'm not sure going through global variables is the best but it seems to work so far
+    # Doesn't work if the questions are defined inside a loop so....
+    category = Category(name)
+    import __main__ # ok thats shameful but it works. So far. Seems fragile though
+    current_vars = copy.copy(vars(__main__)) # gets the global variables where the questions should be
+    question_list = []
+    for stuff in current_vars.values(): # there is a huge bunch of stuff here
+        if isinstance(stuff, Question):
+            if stuff not in question_list:
+                question_list.append(stuff)
+                stuff.addto(category)
+    return category
 
+def no_category_name_warning():
+    logging.warning("Beware, you are exporting some question(s) without specifying a name for the category gathering them. If you want to avoid a default name, you can simply pass an argument to this function, something like : name='the name of my category' ")
 
+def exportxml(name=None):
+    if name is None:
+        no_category_name_warning()
+    gather_questions(name).savexml()
+
+def exporttex(name=None):
+    if name is None:
+        no_category_name_warning()
+    gather_questions(name).savetex()
+
+def exportpdf(name=None):
+    if name is None:
+        no_category_name_warning()
+    gather_questions(name).savepdf()
 
 
 
