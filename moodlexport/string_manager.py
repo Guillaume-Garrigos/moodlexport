@@ -316,7 +316,6 @@ def html_to_latex(string):
     # those are introduced in the function img_to_html64 and and are a bit more complicated to deal with
     open_img = list(findall('<img', string)) # list of where are the tags
     if len(open_img) == 0:
-        print('fail')
         return string
     else:
         close_img = [string.find('>', idx) for idx in open_img] # list of where the tags get closed
