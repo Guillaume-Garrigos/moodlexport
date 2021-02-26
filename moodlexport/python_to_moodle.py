@@ -78,9 +78,9 @@ class Category():
             "info": {"@format": "html", "text": strtools.html(self.get_description())}
         }
         self.dict = { "quiz": {"question": [question_init] } }
-        for question in self.structure['question']:
-            # compiler la question ici pour créer question.dict a partir de sa structure ?
-            question.compilation()
+        for idx, question in enumerate(self.structure['question']):
+            question.namefrom(self, idx+1) # eventually gives a name + number to the question
+            question.compilation() # redundant with Question.addto
             self.dict['quiz']['question'].append(question.dict)
                 
     def savexml(self, file_name=None):
@@ -187,6 +187,11 @@ class Question():
     def addto(self, category):
         self.compilation()
         category.structure['question'].append(self)
+        
+    def namefrom(self, category, number=""): # eventually gets a generic name from the category
+        if not self.structure['name']['isset']: # question name is not set
+            if category.get_name()[:7] != 'Unnamed': # SO FRAGILE ERHHH
+                self.name(category.get_name()+" "+str(number))
         
     def compilation(self):
         """ This is where we put the Answers in the Question
