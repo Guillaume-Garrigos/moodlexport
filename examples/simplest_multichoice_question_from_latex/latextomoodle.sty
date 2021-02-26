@@ -1,0 +1,48 @@
+%%%% Define a family of environments and comments that we can use to define Moodle answers/questions/categories
+
+%%%%% ANSWER
+\usepackage{ifthen}
+\usepackage{wasysym}
+\newcommand{\goodanswer}{$\XBox$~}
+\newcommand{\badanswer}{$\Box$~}
+
+\newcommand{\answer}[2][]{%
+  \ifthenelse{\lengthtest{#1 pt > 0.0pt}}
+    {\leavevmode\newline \noindent \goodanswer #2 \hfill (${#1} \%$)}
+    {\leavevmode\newline \noindent \badanswer #2 \hfill (${#1} \%$)}
+}
+
+%%%%% CATEGORY
+\newenvironment{category}[1][]{ \newpage \section{Catégorie: #1}   }{\bigskip}
+
+\newcommand{\name}[1]{}
+\renewcommand{\description}[1]{}
+
+%%%%% QUESTION
+\newenvironment{question}[1][]{\noindent \textbf{Question:}}{\bigskip}
+
+\renewcommand{\title}[1]{\textbf{(#1)}}
+\newcommand{\infocorrecteur}[1]{~\\ \noindent \textbf{Solution:} #1}
+
+% Dummy commands
+\newcommand{\type}[1]{}
+\newcommand{\generalfeedback}[1]{}
+\newcommand{\grade}[1]{}
+%\renewcommand{\penalty}[1]{}
+\newcommand{\hidden}[1]{}
+\newcommand{\idnumber}[1]{}
+\newcommand{\responseformat}[1]{}
+\newcommand{\responserequired}[1]{}
+\newcommand{\responsefieldlines}[1]{}
+\newcommand{\attachments}[1]{}
+\newcommand{\attachmentsrequired}[1]{}
+\newcommand{\responsetemplate}[1]{}
+\newcommand{\single}[1]{}
+\newcommand{\shuffleanswers}[1]{}
+\newcommand{\answernumbering}[1]{}
+\newcommand{\correctfeedback}[1]{}
+\newcommand{\partiallycorrectfeedback}[1]{}
+\newcommand{\incorrectfeedback}[1]{}
+\newcommand{\shownumcorrect}[1]{}
+
+
