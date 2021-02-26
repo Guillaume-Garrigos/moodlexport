@@ -79,6 +79,7 @@ class Category():
         }
         self.dict = { "quiz": {"question": [question_init] } }
         for idx, question in enumerate(self.structure['question']):
+            # here we need smarter rule for suffix because in alphabetic order gives 1, 10, 2, 3, etc
             question.namefrom(self, idx+1) # eventually gives a name + number to the question
             question.compilation() # redundant with Question.addto
             self.dict['quiz']['question'].append(question.dict)
