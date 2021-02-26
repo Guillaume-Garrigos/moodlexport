@@ -3,6 +3,7 @@ from xml.dom.minidom import parseString
 from xml.sax.saxutils import unescape
 import io
 import base64
+
 from bs4 import BeautifulSoup
 from TexSoup import TexSoup
 import numpy as np
