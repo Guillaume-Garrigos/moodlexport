@@ -219,6 +219,8 @@ class Question():
         # saves the question without category in a single file
         if name is None:
             name = self.get_name()
+        elif not question.structure['name']['isset']:
+            question.name(name)
         cat = Category(name)
         self.addto(cat)
         cat.savexml()
@@ -227,6 +229,8 @@ class Question():
         # saves the question without category in a single file
         if name is None:
             name = self.get_name()
+        elif not question.structure['name']['isset']:
+            question.name(name)
         cat = Category(name)
         self.addto(cat)
         cat.savetex()
@@ -235,6 +239,8 @@ class Question():
         # saves the question without category in a single file
         if name is None:
             name = self.get_name()
+        elif not question.structure['name']['isset']:
+            question.name(name)
         cat = Category(name)
         self.addto(cat)
         cat.savepdf()
