@@ -4,7 +4,7 @@ This Python module provides code which allows to easily generate families of que
 
 | Overview of the possible conversions done within moodlexport |
 | --- |
-| <img src="doc/images/schema.png" width="400"> |
+| <img src="doc/images/schema/schema.png" width="400"> |
 
 ### Installing
 
