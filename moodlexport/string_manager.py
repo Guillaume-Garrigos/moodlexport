@@ -228,7 +228,7 @@ def filter_grade(grade):
 
 
 
-"""
+'''
 This was INDECENTLY SLOW. Like 1 full second to convert an empty string?????
 I couldn't make any parser to work properly. In the end I hard coded it myself.
 It is quite fast now (10000 calls/second), and more robust (allows for newlines etc).
@@ -246,7 +246,7 @@ class T(Transformer):
         return ''.join(children)
 
 def tex_parse_dollar(string):
-    lark = Lark(r'''
+    lark = Lark(r"""
          tex: (mathmode_offset | mathmode_inline | TEXT)+
          mathmode_offset: OFFSETDOLLAR TEXT+ OFFSETDOLLAR | OFFSETOPEN TEXT+ OFFSETCLOSE
          mathmode_inline: INLINEOPEN TEXT+ INLINECLOSE | INLINE TEXT+ INLINE
@@ -257,9 +257,9 @@ def tex_parse_dollar(string):
          OFFSETOPEN: "\\["
          OFFSETCLOSE: "\\]"
          TEXT: /[^\]$]+/s
-         ''', start='tex', parser='lalr')
+         """, start='tex', parser='lalr')
     return T().transform(lark.parse(string)) # string.replace('\n', '') destroys the protected \\n, we need to be smarter here
-"""
+'''
 
 
 #-----------------------------------------------------
@@ -272,7 +272,7 @@ def img_to_html64(path, **options):
             width : int
             heigth : int
             alt : string (alternative text)
-            style : 'inline' or 'centered' (default). The latter adds <br/> around the image.
+            style : 'inline', 'left', 'right', 'centered' (default). The 3 last options add <br/> around the image.
     '''
     if 'style' not in options.keys():
         options['style'] = 'centered'
@@ -289,6 +289,10 @@ def img_to_html64(path, **options):
         return imghtml
     elif options['style'] == 'centered':
         return '</p><p style="text-align: center">' + imghtml + '</p><p>'
+    elif options['style'] == 'right':
+        return '</p><p style="text-align: right">' + imghtml + '</p><p>'
+    elif options['style'] == 'left':
+        return '</p><p style="text-align: left">' + imghtml + '</p><p>'
     
 def includegraphics(path, **options):
     return img_to_html64(path, **options)
@@ -316,8 +320,13 @@ def img64_to_latex(string):
     
     latex = latex + options + '{' + dico['origin'] + '}'
     
-    if 'style' in dico.keys() and dico['style'] == 'centered':
-        latex = '\n\\begin{center}\n    ' + latex + '\n\\end{center}\n'
+    if 'style' in dico.keys():
+        if dico['style'] == 'centered':
+            latex = '\n\\begin{center}\n    ' + latex + '\n\\end{center}\n'
+        elif dico['style'] == 'left':
+            latex = '\n\\begin{flushleft}\n    ' + latex + '\n\\end{flushleft}\n'
+        elif dico['style'] == 'right':
+            latex = '\n\\begin{flushright}\n    ' + latex + '\n\\end{flushright}\n'
     return latex
 
 def findall(pattern, string):
@@ -337,6 +346,8 @@ def html_to_latex(string):
     # the paragraphs tags
     # those are introduced in the function img_to_html64 and we know exactly what they look like
     string = string.replace('</p><p style="text-align: center">', '') 
+    string = string.replace('</p><p style="text-align: left">', '') 
+    string = string.replace('</p><p style="text-align: right">', '') 
     string = string.replace('</p><p>', '')
     
     # the image tags
@@ -367,7 +378,7 @@ def option_string_to_dict(string):
 
 def includegraphics_latex_to_html(string, style):
     # input : a string containing only one latex command 'includegraphics'
-    # input : style is 'inline' or 'centered' (see img_to_html64)
+    # input : style is 'inline', 'right', left' or 'centered' (see img_to_html64)
     # output : an html string containing an image tag
     arguments = list(TexSoup(string).find_all('includegraphics'))[0].args
     # arguments is a list, containing all the arguments, following the following pattern:
@@ -402,6 +413,38 @@ def convert_centered_images_to_html(latex):
         output = output + includegraphics_latex_to_html(string_image, style='centered') + latex[listend[k]+1:listbegin[k+1]]
     string_image = latex[listbegin[nb_images-1]:listend[nb_images-1]+1]
     output = output + includegraphics_latex_to_html(string_image, style='centered') + latex[listend[nb_images-1]+1:]  
+    return output
+
+def convert_lefted_images_to_html(latex):
+    listbegin = list(findall('\\begin{flushleft}', latex))
+    listend = list(findall('\\end{flushleft}', latex))
+    listend = [idx + 15 for idx in listend] # we have the real end of the block
+    nb_images = len(listbegin)
+    if nb_images == 0:
+        return latex
+    
+    output = latex[:listbegin[0]]
+    for k in range(nb_images-1):
+        string_image = latex[listbegin[k]:listend[k]+1]
+        output = output + includegraphics_latex_to_html(string_image, style='left') + latex[listend[k]+1:listbegin[k+1]]
+    string_image = latex[listbegin[nb_images-1]:listend[nb_images-1]+1]
+    output = output + includegraphics_latex_to_html(string_image, style='left') + latex[listend[nb_images-1]+1:]  
+    return output
+
+def convert_righted_images_to_html(latex):
+    listbegin = list(findall('\\begin{flushright}', latex))
+    listend = list(findall('\\end{flushright}', latex))
+    listend = [idx + 16 for idx in listend] # we have the real end of the block
+    nb_images = len(listbegin)
+    if nb_images == 0:
+        return latex
+    
+    output = latex[:listbegin[0]]
+    for k in range(nb_images-1):
+        string_image = latex[listbegin[k]:listend[k]+1]
+        output = output + includegraphics_latex_to_html(string_image, style='left') + latex[listend[k]+1:listbegin[k+1]]
+    string_image = latex[listbegin[nb_images-1]:listend[nb_images-1]+1]
+    output = output + includegraphics_latex_to_html(string_image, style='left') + latex[listend[nb_images-1]+1:]  
     return output
 
 def convert_images_to_html(latex):

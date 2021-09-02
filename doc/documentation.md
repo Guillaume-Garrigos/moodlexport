@@ -163,6 +163,8 @@ Options:
 - `width` and `height` (integer). Modify the size of the image, in pixels. If no argument is passed, the image is displayed in its original shape.
 - `style` (string). Two possible values:
     * `"centered"` (default). The image is displayed in a new line and centered.
+    * `"left"`. The image is displayed in a new line with left alignment.
+    * `"right"`. The image is displayed in a new line with right alignment.
     * `"inline"`. The image is displayed next to the text.
 
 ### Main commands from Latex
