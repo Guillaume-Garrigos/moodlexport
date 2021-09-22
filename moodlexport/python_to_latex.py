@@ -9,6 +9,7 @@ LATEX_PACKAGE_NAME = "latextomoodle"
 
 def latexfile_preamble(list_of_packages=[]):
     string = "\documentclass{article}\n"
+    string += "\\usepackage{tcolorbox}\n"
     string += "\\usepackage{amsmath}\n"
     string += "\\usepackage{amssymb}\n"
     string += "\\usepackage{graphicx}\n"
