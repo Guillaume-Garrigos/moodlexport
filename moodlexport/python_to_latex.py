@@ -48,7 +48,10 @@ def latexfile_append_question(question): #Given a Question return the latex stri
     if question.has_answer():
         content += '\n'
         for answer in question.get_answer():
-            content += latexfile_command('answer', answer.get_text(), str(answer.get_relativegrade()))
+            if question.get_single():
+                content += latexfile_command('answerO', answer.get_text(), str(answer.get_relativegrade()))
+            else:
+                content += latexfile_command('answer', answer.get_text(), str(answer.get_relativegrade()))
     content += '\n'
     for field in question.structure:
         if field not in ['@type', 'questiontext', 'answer', 'name']: # keep it for later/before
