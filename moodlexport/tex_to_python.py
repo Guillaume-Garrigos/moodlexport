@@ -28,11 +28,11 @@ def read_latex_question(latex_question):
             if isfield(field): # is it a field defined in DICT_DEFAULT_QUESTION_MOODLE ?
                 if field == 'answer': # cas un peu compliqué
                     if len(content.args) == 1: # pas d'option donc faux par défaut
-                        text = strtools.latex_to_html_cleaner(content.args[0].value)
-                        question.answer(text, False)
+                        answer_text = strtools.latex_to_html_cleaner(content.args[0].value)
+                        question.answer(answer_text, False)
                     elif len(content.args) == 2: # optional value for grade percentage
-                        text = strtools.latex_to_html_cleaner(content.args[1].value)
-                        question.answer(text, content.args[0].value)
+                        answer_text = strtools.latex_to_html_cleaner(content.args[1].value)
+                        question.answer(answer_text, content.args[0].value)
                 else: # general field, easy to manage
                     value = content.string # a string containing the value of the said option
                     getattr(question, field)(value)
