@@ -5,7 +5,6 @@
 \usepackage{wasysym}
 \newcommand{\goodanswer}{$\XBox$~}
 \newcommand{\badanswer}{$\Box$~}
-
 \newcommand{\answer}[2][]{%
   \ifthenelse{\lengthtest{#1 pt > 0.0pt}}
     {\leavevmode\newline \noindent \goodanswer #2 \hfill (${#1} \%$)}
@@ -20,13 +19,17 @@
 
 %%%%% QUESTION
 \newenvironment{question}[1][]{\noindent \textbf{Question:}}{\bigskip}
-
 \renewcommand{\title}[1]{\textbf{(#1)}}
-\newcommand{\infocorrecteur}[1]{~\\ \noindent \textbf{Solution:} #1}
+\newcommand{\infocorrecteur}[1]{\smallskip ~\\ \noindent \textbf{Solution:} #1 \smallskip}
 
-% Dummy commands
+%%%%% FEEDBACKS
+\newcommand{\generalfeedback}[1]{\smallskip ~\\ \noindent \textbf{General feedback:} #1 \smallskip}
+\newcommand{\correctfeedback}[1]{\smallskip ~\\ \noindent \textbf{Correct feedback:} #1 \smallskip}
+\newcommand{\partiallycorrectfeedback}[1]{\smallskip ~\\ \noindent \textbf{Partially correct feedback:} #1 \smallskip}
+\newcommand{\incorrectfeedback}[1]{\smallskip ~\\ \noindent \textbf{Incorrect feedback:} #1 \smallskip}
+
+%%%%% Dummy commands
 \newcommand{\type}[1]{}
-\newcommand{\generalfeedback}[1]{}
 \newcommand{\grade}[1]{}
 %\renewcommand{\penalty}[1]{}
 \newcommand{\hidden}[1]{}
@@ -40,9 +43,6 @@
 \newcommand{\single}[1]{}
 \newcommand{\shuffleanswers}[1]{}
 \newcommand{\answernumbering}[1]{}
-\newcommand{\correctfeedback}[1]{}
-\newcommand{\partiallycorrectfeedback}[1]{}
-\newcommand{\incorrectfeedback}[1]{}
 \newcommand{\shownumcorrect}[1]{}
 
 
