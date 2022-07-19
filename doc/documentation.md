@@ -137,8 +137,16 @@ Is every symmetric matrix invertible?
 - `question.addto(category)` adds the question to a `category`
 
 Methods specific to the `essay` type (answer via a text editor):
-- `question.responseformat(string)` : `editorfilepicker` lets the student upload a file as an answer (default) , `editor` forbids it.
+- `question.responseformat(string)` : 
+  - `editorfilepicker` the student can upload a file as an answer or type in the textbox (default) 
+  - `editor` the student can only use the textbox, upload of a file is unavailable
+  - `noinline` the textbox is unavailable, upload of a file is mandatory
 - `question.responserequired(bool)` : `0` if no response is required (default), `1` if a response is required.
+Methods specific to the `essay` type (answer via a text editor):
+- `question.responseformat(string)` : `editorfilepicker` lets the student upload a file as an answer (default) , `editor` forbids it, `noinline` gets rid of the text box and forces the student to upload at least a file
+- `question.responserequired(bool)` : `0` if no response is required (default), `1` if a response is required.
+- `question.attachments(int)`: lets the student upload at most `int` files.
+- `question.attachmentsrequired(int)`: student must upload at most `int` files.
 
 Methods specific to the `multichoice` type (finite number of possible answers):
 - `question.answer(string, value)` : Adds a possible answer to the question. `string` is the text of the answer, `value` describes if this answer is correct or no. It can be described in two ways:
