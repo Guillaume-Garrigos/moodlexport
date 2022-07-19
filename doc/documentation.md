@@ -211,7 +211,7 @@ list_of_categories = latextopython('file_name.tex')
 
 ## Changelog
 
-- v.0.0.26 
+- v.0.0.30
     - Solves a bug for Latex->Moodle conversion with multichoice question. The text of the question was being erased by the text of the answers.
     - Make the feedback(s) appear on the .pdf documents, when provided. Proposed by [@jcerezochem](https://github.com/jcerezochem) in issue #10
     - Updates in the documentation. Proposed by [@theresiavr](https://github.com/theresiavr) in issue #13 
