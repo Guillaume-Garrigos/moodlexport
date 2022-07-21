@@ -1,5 +1,8 @@
 # moodlexport
 
+![PyPI version badge](https://img.shields.io/pypi/v/moodlexport)
+![Last commit badge](https://img.shields.io/github/last-commit/Guillaume-Garrigos/moodlexport?color=blue)
+
 This Python module provides code which allows to easily generate families of questions (called *categories* in Moodle) that can be directly created from either Python or Latex document, and then directly exported into Moodle (through the Moodle XML import functionality), where they can be used to create a test. 
 
 | Overview of the possible conversions done within moodlexport |
