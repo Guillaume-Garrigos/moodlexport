@@ -125,6 +125,7 @@ Is every symmetric matrix invertible?
 - `category.savetex(string)` creates a TEX file, containing all the questions of the category, nicely displayed. The name of the file is the name of the category by default (spaces and underscores will be replaced with `-`). If a `string` is given, the name of the file will be `string.tex`.
 - `category.savepdf(string)` creates a TEX file as above and then compiles it to generated a PDF file.
 - `category.description(string)` Adds a description to the category, which will appear in Moodle.
+- `category.path(string)` by default the category is imported at the root of the class. But you might want to order your categories with a tree structure (Moodle allows for subacategories). For instance `category.path("Default/main category/subcategory12/)` will ensure that after import you category will be a subcategory of `subcategory12`. Pay attention to the final `"/"`!
 
 #### The Question Class
 
@@ -177,9 +178,10 @@ Options:
 
 It is possible to use a similar syntax within a TEX document :
 
-- `\begin{category}[name] ... \end{category}` defines the  environment corresponding to a category. It is possible to write various categories within the same document. `name` is the name of the category.
+- `\begin{category}[name] ... \end{category}` defines the  environment corresponding to a category. It is possible to write various categories within the same document. `name` is the (optional) name of the category.
+    - `\description{string}` and `\path{string}` are commands working similarly to their python counterpart.
 - `\begin{question}[type] ... \end{question}` defines the  environment corresponding to a question. It is possible to write various question within the same category. `type` is the type of the question, `essay` by default.
-- All the methods mentioned above can be used in latex. The analogue of `.OPTION(value)` becomes `\OPTION{value}` in Latex (and must be placed within the corresponding environment). For instance :
+- All the methods mentioned in the Python section can be used in latex. The analogue of `.OPTION(value)` becomes `\OPTION{value}` in Latex (and must be placed within the corresponding environment). For instance :
     - `\description{string}` sets the description of a category
     - `\grade{float}` sets the grade of a question
     - `\answer[value]{string}` adds an answer to a multichoice question
@@ -211,6 +213,7 @@ list_of_categories = latextopython('file_name.tex')
 
 ## Changelog
 
+- v.0.0.31 Implements the option `path` for categories for Latex->Moodle conversion.
 - v.0.0.30
     - Solves a bug for Latex->Moodle conversion with multichoice question. The text of the question was being erased by the text of the answers.
     - Make the feedback(s) appear on the .pdf documents, when provided. Proposed by [@jcerezochem](https://github.com/jcerezochem) in issue #10
