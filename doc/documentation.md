@@ -1,18 +1,21 @@
 # Documentation
 
-(work in progress)
+*Go back to the [main page](../README.md)*
 
-Some internal links within this documentation:
+
+Table of contents of this documentation:
 - [Main features of this module so far](#Main-features-of-this-module-so-far)
 - [Quick start](#Quick-start)
     - [Simple examples from Python](#Simple-examples-from-Python)
     - [Simple examples from Latex](#Simple-examples-from-Latex)
     - [Exporting many questions at once](#Exporting-many-questions-at-once)
-- [Documentation](#Documentation)
+- [Advanced documentation](#Advanced-documentation)
     - [Main commands from Python](#Main-commands-from-Python)
     - [Main commands from Latex](#Main-commands-from-Latex)
-- [Changelog](#Changelog)
-- [Known issues/missing features](#Known-issues/missing-features)
+    - [Miscellaneous](#Miscellaneous)
+        - [Inserting an image](#Inserting-an-image)
+        - [Turning variables into Latex](#Turning-variables-into-Latex)
+        
 
 
 
@@ -113,7 +116,7 @@ Is every symmetric matrix invertible?
 \end{document}
 ```
 
-## Documentation
+## Advanced documentation
 
 ### Main commands from Python
 
@@ -155,24 +158,7 @@ Methods specific to the `multichoice` type (finite number of possible answers):
     - as a percentage (integer between 0 and 100), which represents the fraction of the grade attributed to the answer. This is typically used for questions with more than 2 answers. A unique true answer has 100, a wrong answer has 0 (default)
 - `question.single(value)` : `true` if only one answer is possible (default), `false` if more than one answer can be selected by the student.
 
-#### Misc.
 
-Inserting an image: to do so, use the `includegraphics` function:
-
-```python
-from moodlexport import includegraphics
-
-text = 'here is a cool image:' + includegraphics("./some_folder/my_image.png", width=256, height=128)
-
-question = Question()
-question.text(text)
-```
-
-Options:
-- `width` and `height` (integer). Modify the size of the image, in pixels. If no argument is passed, the image is displayed in its original shape.
-- `style` (string). Two possible values:
-    * `"centered"` (default). The image is displayed in a new line and centered.
-    * `"inline"`. The image is displayed next to the text.
 
 ### Main commands from Latex
 
@@ -185,12 +171,9 @@ It is possible to use a similar syntax within a TEX document :
     - `\description{string}` sets the description of a category
     - `\grade{float}` sets the grade of a question
     - `\answer[value]{string}` adds an answer to a multichoice question
-- Inserting images is done with the command `\includegraphics[width=256px, height=128px]{./some_folder/my_image.png}` from the package `graphicx`
-    * for the options `width` and `height` the only supported unit is `px`
-    * the option `scale` is not supported
-    * if the command `\includegraphics` is called within an environment `\begin{center} ... \end{center}`, the image will be centered as well in Moodle. If not it will be displayed inline.
 
-The corresponding latex package can be found in `moodlexport/moodlexport/templates`, should be [https://github.com/Guillaume-Garrigos/moodlexport/tree/master/moodlexport/templates](here).
+
+The corresponding latex package can be found in `moodlexport/moodlexport/templates`, should be [here](https://github.com/Guillaume-Garrigos/moodlexport/tree/master/moodlexport/templates).
 
 To convert a .tex file into an .xml, use
 
@@ -209,27 +192,36 @@ list_of_categories = latextopython('file_name.tex')
 
 
 
+### Miscellaneous
 
+#### Inserting an image
 
-## Changelog
+From latex, the command `includegraphics` is supported. More exactly you can use a command like `\includegraphics[width=256px, height=128px]{./some_folder/my_image.png}` from the package `graphicx`
+- for the options `width` and `height`, the only supported unit is `px`
+- the option `scale` is not supported
+- if the command `\includegraphics` is called inline then it will be displayed inline in Moodle as well.
+- if the command is called in an environment `\begin{center} ... \end{center}`, the image will be centered as well in Moodle.
+- no other environments controlling the position of the image is supported for now.
 
-- v.0.0.31 Implements the option `path` for categories for Latex->Moodle conversion.
-- v.0.0.30
-    - Solves a bug for Latex->Moodle conversion with multichoice question. The text of the question was being erased by the text of the answers.
-    - Make the feedback(s) appear on the .pdf documents, when provided. Proposed by [@jcerezochem](https://github.com/jcerezochem) in issue #10
-    - Updates in the documentation. Proposed by [@theresiavr](https://github.com/theresiavr) in issue #13 
-- v.0.0.25 Solves two bugs for multichoice questions from issue #6, with code from [@Stivanification](https://github.com/Stivanification)
-- v.0.0.24 Solves issue #5
-- v.0.0.23 Forgot to load some modules. [https://github.com/Guillaume-Garrigos/moodlexport/pull/4](Merge) from [@gregnordin](https://github.com/gregnordin)
-- v.0.0.22 Add a new feature to insert images.
-- v.0.0.21 The parser used to handle `$`'s was wayyy to slow. This is corrected now.
-- v.0.0.20
-    - I realized that depending on Moodle's version, or depending on how the administrator implements it, inline math like `$e^x$` can not be recognized. Moodle's doc [says](https://docs.moodle.org/3x/fr/Utilisation_de_la_notation_TeX) it is not supported. So, now, every inline math `$e^x$` is converted into `\(e^x\)` just before exporting the data into XML. This allows the user to painlessly type latex as usual with `$`'s.
-    - Now TEX files are generated without spaces or `_` in the filename. Because latexmk wasn't happy when generating pdfs.
-- v.0.0.19
-    - Corrects bug #3 for multichoice questions, allowing now for negative grades for wrong answers. Proposed by [@Stivanification](https://github.com/Stivanification).
-    - Corrects bug #2 caused by a broken backcompatibility from the TexSoup Module. Now this module requires the exact needed version
+From python, the `moodlexport` module provides you with a `includegraphics` function, whose api is as close as possible to the Latex one:
 
-## Known issues/missing features
-- for the latex package, there is issues with `newcommand` and `renewcommand` because for instance the document class `amsart` defines `text` but it is not the case for `article`.
-- So far I have a bad time handling breaklines in a text written in python. Using explicit `<br/>` tags should do the job.
+```python
+from moodlexport import includegraphics
+
+text = 'here is a cool image:' + includegraphics("./some_folder/my_image.png", width=256, height=128)
+
+question = Question()
+question.text(text)
+```
+
+Options of this `includegraphics` python function:
+- `width` and `height` (integer). Modify the size of the image, in pixels. If no argument is passed, the image is displayed in its original shape.
+- `style` (string). Two possible values:
+    * `"centered"` (default). The image is displayed in a new line and centered.
+    * `"inline"`. The image is displayed next to the text.
+
+#### Turning variables into Latex
+
+When generating questions from python you will end up with mathematical objects (real number, vector, matrix, etc) that you want to use in your question or answer. This means that at some point you will need to convert those objects into a string, that can eventually be rendered as a Latex expression by Moodle's MathJax feature.
+
+The function [latexify](https://github.com/Guillaume-Garrigos/latexify) does exactly this for you. Note that it is part of `moodlexport`'s dependencies, so you likely have this module already installed in your environment.

@@ -1,6 +1,6 @@
 # moodlexport
 
-![PyPI version badge](https://img.shields.io/pypi/v/moodlexport)
+[![PyPI version badge](https://img.shields.io/pypi/v/moodlexport)](doc/changelog.md)
 ![Last commit badge](https://img.shields.io/github/last-commit/Guillaume-Garrigos/moodlexport?color=blue)
 
 This Python module provides code which allows to easily generate families of questions (called *categories* in Moodle) that can be directly created from either Python or Latex document, and then directly exported into Moodle (through the Moodle XML import functionality), where they can be used to create a test. 
@@ -9,11 +9,19 @@ This Python module provides code which allows to easily generate families of que
 | --- |
 | <img src="doc/images/schema/schema.png" width="400"> |
 
-### Installing
+## Installing
 
 It can be installed with a pip command : `pip install moodlexport`
 
-### A quick overview of what this Module can do
+## Table of contents
+
+- [A quick overview of what this Module can do](#A-quick-overview-of-what-this-Module-can-do)
+- [Motivation](#Motivation)
+- [Advanced documentation](#Advanced-documentation)
+- [Changelog](#Changelog)
+- [Known issues](#Known-issues)
+
+## A quick overview of what this Module can do
 
 This module focuses on two type of questions provided by Moodle : the `multichoice` question (the student chooses one or more answers among others), and the `essay` question (the student is provided a space to type its answer, or upload a document).
 
@@ -76,6 +84,15 @@ The main motivation behind this module is that :
 - it is easier to manipulate locally a Latex or Python file than doing it on the Moodle interface. It also simplifies collaborating projects.
 - it is more convenient to store/read questions/answers in pdf files, than using the Moodle 'bank of questions' interface.
 
-## More advanced documentation
+## Advanced documentation
 
 To read more about what this module can do, on how the parameters of your question can be set, see the complete documentation [here](doc/documentation.md).
+
+## Changelog
+
+The changelog can be found [here](doc/changelog.md).
+
+## Known issues
+
+- for the latex package, there is issues with `newcommand` and `renewcommand` because for instance the document class `amsart` defines `text` but it is not the case for `article`.
+- So far I have a bad time handling breaklines in a text written in python. Using explicit `<br/>` tags should do the job.
