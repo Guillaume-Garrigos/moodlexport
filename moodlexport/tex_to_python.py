@@ -52,10 +52,12 @@ def read_latex_category(category_latex):
     for content in list_contents:
         if isinstance(content, TexNode): # There should be just stuff like that
             field = str(content.name) # a string giving us the name of the option
-            if field == 'name': # not is for some dark reason. same content, but not identity
+            if field == 'name': # don't compare with 'is' for some dark python reason. same content, but not identity
                 category.name(content.string)
             elif field == 'description':
                 category.description(strtools.latex_to_html_cleaner(content.string))
+            elif field == 'path':
+                category.path(strtools.latex_to_html_cleaner(content.string))
             elif field == 'question':
                 question = read_latex_question(content)
                 question.addto(category)
